@@ -1,0 +1,40 @@
+﻿namespace SeCli.libse.ContainerFormats.Mp4.Boxes
+{
+    /// <summary>
+    /// Track Fragment Box
+    /// </summary>
+    public class Traf : Box
+    {
+
+        public Trun Trun { get; set; }
+        public Tfdt Tfdt { get; set; }
+
+        public Traf(Stream fs, ulong maximumLength)
+        {
+            Position = (ulong)fs.Position;
+            while (fs.Position < (long)maximumLength)
+            {
+                if (!InitializeSizeAndName(fs))
+                {
+                    return;
+                }
+
+                if (Name == "trun")
+                {
+                    Trun = new Trun(fs, Position);
+                }
+
+                fs.Seek((long)Position, SeekOrigin.Begin);
+            }
+
+            if (Trun?.Samples != null && Tfdt != null)
+            {
+                foreach (var timeSegment in Trun.Samples)
+                {
+                    timeSegment.BaseMediaDecodeTime = Tfdt.BaseMediaDecodeTime;
+                }
+            }
+        }
+
+    }
+}
