@@ -7,7 +7,6 @@ To update, the `SubtitleFormats` should be copied from latest SE.
 
 How to compile: `dotnet build SeCli.csproj`
 
-How to run: `./SeCli /convert`
-See https://www.nikse.dk/subtitleedit/help#commandline
+How to run: `./SeCli /convert` - for more info see https://www.nikse.dk/subtitleedit/help#commandline
 
 This was made due to https://github.com/SubtitleEdit/subtitleedit/issues/3568
