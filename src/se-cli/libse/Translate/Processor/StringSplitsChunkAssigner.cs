@@ -1,4 +1,4 @@
-﻿namespace SeCli.libse.Translate.Processor
+﻿namespace seconv.libse.Translate.Processor
 {
     /// <summary>
     /// breaks up a (target) string and assigns the resulting individual components

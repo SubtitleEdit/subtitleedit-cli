@@ -1,4 +1,4 @@
-﻿namespace SeCli.libse.Cea708
+﻿namespace seconv.libse.Cea708
 {
     public class Smpte291M
     {

@@ -1,4 +1,4 @@
-﻿namespace SeCli.libse.Grammar
+﻿namespace seconv.libse.Grammar
 {
     /// <summary>
     /// http://wiki.languagetool.org/development-overview

@@ -1,8 +1,8 @@
 ﻿using System.Net;
 using System.Text;
-using SeCli.libse.Common;
+using seconv.libse.Common;
 
-namespace SeCli.libse.SubtitleFormats
+namespace seconv.libse.SubtitleFormats
 {
     /// <summary>
     /// http://wam.inrialpes.fr/timesheets/annotations/video.html

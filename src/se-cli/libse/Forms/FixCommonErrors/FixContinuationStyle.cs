@@ -1,9 +1,9 @@
-﻿using SeCli.libse.Common;
-using SeCli.libse.Dictionaries;
-using SeCli.libse.Enums;
-using SeCli.libse.Interfaces;
+﻿using seconv.libse.Common;
+using seconv.libse.Dictionaries;
+using seconv.libse.Enums;
+using seconv.libse.Interfaces;
 
-namespace SeCli.libse.Forms.FixCommonErrors
+namespace seconv.libse.Forms.FixCommonErrors
 {
     public class FixContinuationStyle : IFixCommonError
     {

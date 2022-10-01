@@ -2,9 +2,9 @@
 using System.IO.Compression;
 using System.Text;
 using System.Xml;
-using SeCli.libse.Common;
+using seconv.libse.Common;
 
-namespace SeCli.libse.SubtitleFormats
+namespace seconv.libse.SubtitleFormats
 {
     /// <summary>
     /// Reads the xml file inside a ".prproj" file (gzipped zml) from Adobe Premiere (Essential Graphics).

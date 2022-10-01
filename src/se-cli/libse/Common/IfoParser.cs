@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Text;
 
-namespace SeCli.libse.Common
+namespace seconv.libse.Common
 {
     public class IfoParser : IDisposable
     {

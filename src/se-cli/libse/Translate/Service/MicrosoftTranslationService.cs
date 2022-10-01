@@ -1,10 +1,10 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
-using SeCli.libse.Common;
-using SeCli.libse.SubtitleFormats;
+using seconv.libse.Common;
+using seconv.libse.SubtitleFormats;
 
-namespace SeCli.libse.Translate.Service
+namespace seconv.libse.Translate.Service
 {
     /// <summary>
     /// https://docs.microsoft.com/en-us/azure/cognitive-services/translator/reference/v3-0-translate

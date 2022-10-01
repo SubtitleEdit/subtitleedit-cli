@@ -1,9 +1,9 @@
 ﻿using System.Globalization;
-using SeCli.libse.Common;
-using SeCli.libse.Common.TextLengthCalculator;
-using SeCli.libse.SubtitleFormats;
+using seconv.libse.Common;
+using seconv.libse.Common.TextLengthCalculator;
+using seconv.libse.SubtitleFormats;
 
-namespace SeCli.libse.NetflixQualityCheck
+namespace seconv.libse.NetflixQualityCheck
 {
     /// <summary>
     /// Maximum 42 chars per line for the majority of languages.

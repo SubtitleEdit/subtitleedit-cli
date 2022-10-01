@@ -1,6 +1,6 @@
 ﻿// (c) Giora Tamir (giora@gtamir.com), 2005
 
-namespace SeCli.libse.ContainerFormats
+namespace seconv.libse.ContainerFormats
 {
     internal class AviStreamHeader
     {

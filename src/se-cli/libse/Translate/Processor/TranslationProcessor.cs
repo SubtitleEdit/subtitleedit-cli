@@ -1,7 +1,7 @@
-﻿using SeCli.libse.Common;
-using SeCli.libse.Translate.Service;
+﻿using seconv.libse.Common;
+using seconv.libse.Translate.Service;
 
-namespace SeCli.libse.Translate.Processor
+namespace seconv.libse.Translate.Processor
 {
     /// <summary>
     /// handles complex translation tasks and cares about:

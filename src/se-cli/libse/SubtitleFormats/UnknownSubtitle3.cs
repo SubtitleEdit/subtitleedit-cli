@@ -1,7 +1,7 @@
 ﻿using System.Text;
-using SeCli.libse.Common;
+using seconv.libse.Common;
 
-namespace SeCli.libse.SubtitleFormats
+namespace seconv.libse.SubtitleFormats
 {
     //Subtitle number: 1
     //Start time (or frames): 00:00:48,862:0000001222

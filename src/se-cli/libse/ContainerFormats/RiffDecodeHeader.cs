@@ -1,9 +1,9 @@
 ﻿// (c) Giora Tamir (giora@gtamir.com), 2005
 
 using System.Text;
-using SeCli.libse.Common;
+using seconv.libse.Common;
 
-namespace SeCli.libse.ContainerFormats
+namespace seconv.libse.ContainerFormats
 {
     public class RiffDecodeHeader
     {

@@ -1,9 +1,9 @@
 ﻿using System.Globalization;
 using System.Text;
-using SeCli.libse.Common;
-using SeCli.libse.Interfaces;
+using seconv.libse.Common;
+using seconv.libse.Interfaces;
 
-namespace SeCli.libse.SubtitleFormats
+namespace seconv.libse.SubtitleFormats
 {
     public class Cavena890 : SubtitleFormat, IBinaryPersistableSubtitle
     {

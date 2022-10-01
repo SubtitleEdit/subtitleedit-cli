@@ -1,8 +1,8 @@
 ﻿using System.Text;
-using SeCli.libse.Common;
-using SeCli.libse.SubtitleFormats;
+using seconv.libse.Common;
+using seconv.libse.SubtitleFormats;
 
-namespace SeCli.libse.ContainerFormats.Mp4.Boxes
+namespace seconv.libse.ContainerFormats.Mp4.Boxes
 {
     public class Stbl : Box
     {

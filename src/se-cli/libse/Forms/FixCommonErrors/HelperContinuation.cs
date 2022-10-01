@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace SeCli.libse.Forms.FixCommonErrors
+namespace seconv.libse.Forms.FixCommonErrors
 {
     public static class HelperContinuation
     {

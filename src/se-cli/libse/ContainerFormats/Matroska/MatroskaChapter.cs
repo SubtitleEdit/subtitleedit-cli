@@ -1,4 +1,4 @@
-﻿namespace SeCli.libse.ContainerFormats.Matroska
+﻿namespace seconv.libse.ContainerFormats.Matroska
 {
     [Serializable]
     public class MatroskaChapter

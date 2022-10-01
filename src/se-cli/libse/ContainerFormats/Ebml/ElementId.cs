@@ -1,4 +1,4 @@
-﻿namespace SeCli.libse.ContainerFormats.Ebml
+﻿namespace seconv.libse.ContainerFormats.Ebml
 {
     internal enum ElementId
     {

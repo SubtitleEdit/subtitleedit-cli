@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Text;
 using System.Text.RegularExpressions;
-using SeCli.libse.Common;
+using seconv.libse.Common;
 
-namespace SeCli.libse.SubtitleFormats
+namespace seconv.libse.SubtitleFormats
 {
     // TODO: Working on added edit capabilities for idx files...
     public class Idx : SubtitleFormat

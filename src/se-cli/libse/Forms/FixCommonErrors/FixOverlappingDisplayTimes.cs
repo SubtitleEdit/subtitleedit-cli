@@ -1,8 +1,8 @@
-﻿using SeCli.libse.Common;
-using SeCli.libse.Interfaces;
-using SeCli.libse.SubtitleFormats;
+﻿using seconv.libse.Common;
+using seconv.libse.Interfaces;
+using seconv.libse.SubtitleFormats;
 
-namespace SeCli.libse.Forms.FixCommonErrors
+namespace seconv.libse.Forms.FixCommonErrors
 {
     public class FixOverlappingDisplayTimes : IFixCommonError
     {

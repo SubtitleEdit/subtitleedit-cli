@@ -1,8 +1,8 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
-using SeCli.libse.SubtitleFormats;
+using seconv.libse.SubtitleFormats;
 
-namespace SeCli.libse.Common
+namespace seconv.libse.Common
 {
     /// <summary>
     /// Generic subtitle format parser

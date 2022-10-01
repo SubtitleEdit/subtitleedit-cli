@@ -1,6 +1,6 @@
-﻿using SeCli.libse.Common;
+﻿using seconv.libse.Common;
 
-namespace SeCli.libse.Dictionaries
+namespace seconv.libse.Dictionaries
 {
     public static class StringWithoutSpaceSplitToWords
     {

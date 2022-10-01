@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace SeCli.libse.ContainerFormats.Mp4.Boxes
+namespace seconv.libse.ContainerFormats.Mp4.Boxes
 {
     public class Box
     {

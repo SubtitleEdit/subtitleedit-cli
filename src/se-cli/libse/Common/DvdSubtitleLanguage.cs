@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Globalization;
 
-namespace SeCli.libse.Common
+namespace seconv.libse.Common
 {
     public class DvdSubtitleLanguage
     {

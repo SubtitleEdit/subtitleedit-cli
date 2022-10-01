@@ -1,4 +1,4 @@
-﻿namespace SeCli.libse.Cea708.Commands
+﻿namespace seconv.libse.Cea708.Commands
 {
     public class SetText : ICea708Command
     {

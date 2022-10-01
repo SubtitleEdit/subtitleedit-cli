@@ -1,6 +1,6 @@
-﻿using SeCli.libse.Common;
+﻿using seconv.libse.Common;
 
-namespace SeCli.libse.Translate.Processor
+namespace seconv.libse.Translate.Processor
 {
     public class SingleParagraphTranslationProcessor : AbstractTranslationProcessor<Paragraph>
     {

@@ -1,7 +1,7 @@
 ﻿using System.Text;
-using SeCli.libse.Common;
+using seconv.libse.Common;
 
-namespace SeCli.libse.SubtitleFormats
+namespace seconv.libse.SubtitleFormats
 {
     public class JsonType5 : SubtitleFormat
     {

@@ -1,8 +1,8 @@
 ﻿using System.Text;
-using SeCli.libse.Cea708.Commands;
-using SeCli.libse.Common;
+using seconv.libse.Cea708.Commands;
+using seconv.libse.Common;
 
-namespace SeCli.libse.Cea708
+namespace seconv.libse.Cea708
 {
     /// <summary>
     /// https://en.wikipedia.org/wiki/CEA-708

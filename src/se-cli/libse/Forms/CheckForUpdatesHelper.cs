@@ -1,8 +1,8 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
-using SeCli.libse.Common;
+using seconv.libse.Common;
 
-namespace SeCli.libse.Forms
+namespace seconv.libse.Forms
 {
     public class CheckForUpdatesHelper
     {

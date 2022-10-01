@@ -1,8 +1,8 @@
 ﻿using System.Globalization;
 using System.Text;
-using SeCli.libse.Common;
+using seconv.libse.Common;
 
-namespace SeCli.libse.SubtitleFormats
+namespace seconv.libse.SubtitleFormats
 {
     /// <summary>
     /// https://lv.ulikecam.com/

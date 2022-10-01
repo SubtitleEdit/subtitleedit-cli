@@ -1,4 +1,4 @@
-﻿namespace SeCli.libse.Common.TextLengthCalculator
+﻿namespace seconv.libse.Common.TextLengthCalculator
 {
     public interface ICalcLength
     {

@@ -1,8 +1,8 @@
 ﻿using System.Text;
-using SeCli.libse.Common;
-using SeCli.libse.ContainerFormats.Mp4.Boxes;
+using seconv.libse.Common;
+using seconv.libse.ContainerFormats.Mp4.Boxes;
 
-namespace SeCli.libse.ContainerFormats.Mp4
+namespace seconv.libse.ContainerFormats.Mp4
 {
     /// <summary>
     /// http://wiki.multimedia.cx/index.php?title=QuickTime_container

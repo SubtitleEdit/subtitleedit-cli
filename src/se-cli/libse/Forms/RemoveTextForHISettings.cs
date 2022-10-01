@@ -1,7 +1,7 @@
-﻿using SeCli.libse.Common;
-using SeCli.libse.Dictionaries;
+﻿using seconv.libse.Common;
+using seconv.libse.Dictionaries;
 
-namespace SeCli.libse.Forms
+namespace seconv.libse.Forms
 {
     public class RemoveTextForHISettings
     {

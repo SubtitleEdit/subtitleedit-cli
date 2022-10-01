@@ -2,9 +2,9 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
-using SeCli.libse.Common;
+using seconv.libse.Common;
 
-namespace SeCli.libse.SubtitleFormats
+namespace seconv.libse.SubtitleFormats
 {
     /// <summary>
     /// Netflix version of timed text - time code is "00:00:04.000", tag <br /> is converted to <br/>

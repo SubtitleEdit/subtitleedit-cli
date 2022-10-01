@@ -1,6 +1,6 @@
-﻿using SeCli.libse.Common;
+﻿using seconv.libse.Common;
 
-namespace SeCli.libse.NetflixQualityCheck
+namespace seconv.libse.NetflixQualityCheck
 {
     /// <summary>
     /// Two lines maximum.

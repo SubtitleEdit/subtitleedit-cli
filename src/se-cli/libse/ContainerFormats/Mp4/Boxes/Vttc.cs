@@ -1,7 +1,7 @@
 ﻿using System.Text;
-using SeCli.libse.Common;
+using seconv.libse.Common;
 
-namespace SeCli.libse.ContainerFormats.Mp4.Boxes
+namespace seconv.libse.ContainerFormats.Mp4.Boxes
 {
     /// <summary>
     /// Web VTT Configuration Box

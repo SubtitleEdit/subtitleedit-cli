@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
-using SeCli.libse.Common;
+using seconv.libse.Common;
 
-namespace SeCli.libse.NetflixQualityCheck
+namespace seconv.libse.NetflixQualityCheck
 {
     public class NetflixCheckWhiteSpace : INetflixQualityChecker
     {

@@ -1,6 +1,6 @@
-﻿using SeCli.libse.Common;
+﻿using seconv.libse.Common;
 
-namespace SeCli.libse.NetflixQualityCheck
+namespace seconv.libse.NetflixQualityCheck
 {
     public static class NetflixHelper
     {

@@ -1,7 +1,7 @@
-﻿using SeCli.libse.Common;
-using SeCli.libse.SubtitleFormats;
+﻿using seconv.libse.Common;
+using seconv.libse.SubtitleFormats;
 
-namespace SeCli.libse.NetflixQualityCheck
+namespace seconv.libse.NetflixQualityCheck
 {
     /// <summary>
     /// Two frames gap minimum.

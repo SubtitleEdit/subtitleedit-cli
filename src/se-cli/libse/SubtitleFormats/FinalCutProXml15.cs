@@ -2,9 +2,9 @@
 using System.Globalization;
 using System.Text;
 using System.Xml;
-using SeCli.libse.Common;
+using seconv.libse.Common;
 
-namespace SeCli.libse.SubtitleFormats
+namespace seconv.libse.SubtitleFormats
 {
     public class FcpXmlStyle
     {

@@ -1,6 +1,6 @@
-﻿using SeCli.libse.Common;
+﻿using seconv.libse.Common;
 
-namespace SeCli.libse.Interfaces
+namespace seconv.libse.Interfaces
 {
     public interface IBinaryPersistableSubtitle
     {

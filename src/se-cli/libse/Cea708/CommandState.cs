@@ -1,6 +1,6 @@
-﻿using SeCli.libse.Cea708.Commands;
+﻿using seconv.libse.Cea708.Commands;
 
-namespace SeCli.libse.Cea708
+namespace seconv.libse.Cea708
 {
     public class CommandState
     {

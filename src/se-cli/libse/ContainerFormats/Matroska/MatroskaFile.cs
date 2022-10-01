@@ -1,9 +1,9 @@
 ﻿using System.IO.MemoryMappedFiles;
 using System.Text;
-using SeCli.libse.Common;
-using SeCli.libse.ContainerFormats.Ebml;
+using seconv.libse.Common;
+using seconv.libse.ContainerFormats.Ebml;
 
-namespace SeCli.libse.ContainerFormats.Matroska
+namespace seconv.libse.ContainerFormats.Matroska
 {
     public sealed class MatroskaFile : IDisposable
     {

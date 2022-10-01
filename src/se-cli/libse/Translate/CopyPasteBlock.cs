@@ -1,6 +1,6 @@
-﻿using SeCli.libse.Common;
+﻿using seconv.libse.Common;
 
-namespace SeCli.libse.Translate
+namespace seconv.libse.Translate
 {
     public class CopyPasteBlock
     {

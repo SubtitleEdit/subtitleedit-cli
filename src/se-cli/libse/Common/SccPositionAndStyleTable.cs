@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Drawing;
 
-namespace SeCli.libse.Common
+namespace seconv.libse.Common
 {
     public static class SccPositionAndStyleTable
     {

@@ -1,4 +1,4 @@
-﻿namespace SeCli.libse.SpellCheck
+﻿namespace seconv.libse.SpellCheck
 {
     public class SpellCheckWord
     {

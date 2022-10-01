@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
-using SeCli.libse.Common;
+using seconv.libse.Common;
 
-namespace SeCli.libse.NetflixQualityCheck
+namespace seconv.libse.NetflixQualityCheck
 {
     /// <summary>
     /// When a number begins a sentence, it should always be spelled out.

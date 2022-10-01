@@ -1,7 +1,7 @@
 ﻿using System.Text;
-using SeCli.libse.Common;
+using seconv.libse.Common;
 
-namespace SeCli.libse.SubtitleFormats
+namespace seconv.libse.SubtitleFormats
 {
     /// <summary>
     /// .CHK subtitle file format - 128 bytes blocks, first byte in block is id (01==text)

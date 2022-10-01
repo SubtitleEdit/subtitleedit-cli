@@ -1,4 +1,4 @@
-﻿namespace SeCli.libse.Common
+﻿namespace seconv.libse.Common
 {
     /// <summary>
     /// Exposes a <see cref="Stream"/> around a file, supporting synchronous read operations.

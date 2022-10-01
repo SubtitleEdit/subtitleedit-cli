@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace SeCli.libse.Translate.Processor
+namespace seconv.libse.Translate.Processor
 {
     public class StringSplitEngine
     {

@@ -1,8 +1,8 @@
 ﻿using System.Text;
-using SeCli.libse.Common;
-using SeCli.libse.SubtitleFormats;
+using seconv.libse.Common;
+using seconv.libse.SubtitleFormats;
 
-namespace SeCli.libse.Interfaces
+namespace seconv.libse.Interfaces
 {
     public interface IFixCallbacks : IDoSpell
     {

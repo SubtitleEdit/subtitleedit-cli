@@ -1,7 +1,7 @@
 ﻿using System.Text;
-using SeCli.libse.Common;
+using seconv.libse.Common;
 
-namespace SeCli.libse.Forms
+namespace seconv.libse.Forms
 {
     public class MoveWordUpDown
     {

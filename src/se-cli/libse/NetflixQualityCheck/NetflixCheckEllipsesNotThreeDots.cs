@@ -1,6 +1,6 @@
-﻿using SeCli.libse.Common;
+﻿using seconv.libse.Common;
 
-namespace SeCli.libse.NetflixQualityCheck
+namespace seconv.libse.NetflixQualityCheck
 {
     /// <summary>
     /// When including ellipses in subtitles, use the single smart character (U+2026) as opposed to three dots/periods in a row.

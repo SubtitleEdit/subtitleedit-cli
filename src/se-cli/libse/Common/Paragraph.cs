@@ -1,6 +1,6 @@
-﻿using SeCli.libse.Translate.Processor;
+﻿using seconv.libse.Translate.Processor;
 
-namespace SeCli.libse.Common
+namespace seconv.libse.Common
 {
     public class Paragraph : ITranslationBaseUnit
     {

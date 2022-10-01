@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace SeCli.libse.Common
+namespace seconv.libse.Common
 {
     public class NoBreakAfterItem : IComparable<NoBreakAfterItem>
     {

@@ -1,9 +1,9 @@
 ﻿using System.Globalization;
 using System.Text;
-using SeCli.libse.Common;
-using SeCli.libse.Forms.FixCommonErrors;
+using seconv.libse.Common;
+using seconv.libse.Forms.FixCommonErrors;
 
-namespace SeCli.libse.SubtitleFormats
+namespace seconv.libse.SubtitleFormats
 {
     public class GooglePlayJson : SubtitleFormat
     {

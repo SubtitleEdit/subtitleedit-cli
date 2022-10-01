@@ -1,7 +1,7 @@
 ﻿using System.Security;
 using Microsoft.Win32;
 
-namespace SeCli.libse.Common
+namespace seconv.libse.Common
 {
     public static class RegistryUtil
     {

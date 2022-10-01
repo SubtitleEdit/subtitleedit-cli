@@ -1,7 +1,7 @@
-﻿using SeCli.libse.Common;
-using SeCli.libse.SubtitleFormats;
+﻿using seconv.libse.Common;
+using seconv.libse.SubtitleFormats;
 
-namespace SeCli.libse.NetflixQualityCheck
+namespace seconv.libse.NetflixQualityCheck
 {
     /// <summary>
     /// Close gaps between subtitles of 3-11 frames (inclusive) to 2 frames.

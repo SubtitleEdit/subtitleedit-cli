@@ -1,9 +1,9 @@
 ﻿using System.Globalization;
 using System.Text;
-using SeCli.libse.Common;
-using SeCli.libse.Enums;
+using seconv.libse.Common;
+using seconv.libse.Enums;
 
-namespace SeCli.libse.NetflixQualityCheck
+namespace seconv.libse.NetflixQualityCheck
 {
     public class NetflixQualityController
     {

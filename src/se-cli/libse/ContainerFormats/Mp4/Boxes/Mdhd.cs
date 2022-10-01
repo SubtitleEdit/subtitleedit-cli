@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace SeCli.libse.ContainerFormats.Mp4.Boxes
+namespace seconv.libse.ContainerFormats.Mp4.Boxes
 {
     /// <summary>
     /// Media Header Box

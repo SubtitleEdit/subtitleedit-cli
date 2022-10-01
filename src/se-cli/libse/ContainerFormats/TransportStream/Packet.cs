@@ -1,4 +1,4 @@
-﻿namespace SeCli.libse.ContainerFormats.TransportStream
+﻿namespace seconv.libse.ContainerFormats.TransportStream
 {
     /// <summary>
     /// MPEG transport stream packet

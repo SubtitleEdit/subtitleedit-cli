@@ -1,7 +1,7 @@
 ﻿using System.Xml;
-using SeCli.libse.Common;
+using seconv.libse.Common;
 
-namespace SeCli.libse.NetflixQualityCheck
+namespace seconv.libse.NetflixQualityCheck
 {
     public class NetflixCheckTimedTextFrameRate : INetflixQualityChecker
     {

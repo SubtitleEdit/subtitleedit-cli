@@ -1,6 +1,6 @@
-﻿using SeCli.libse.Common;
+﻿using seconv.libse.Common;
 
-namespace SeCli.libse.ContainerFormats.MaterialExchangeFormat
+namespace seconv.libse.ContainerFormats.MaterialExchangeFormat
 {
     public class MxfParser
     {

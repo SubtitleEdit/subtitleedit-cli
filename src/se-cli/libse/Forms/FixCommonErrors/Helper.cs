@@ -1,7 +1,7 @@
 ﻿using System.Text;
-using SeCli.libse.Common;
+using seconv.libse.Common;
 
-namespace SeCli.libse.Forms.FixCommonErrors
+namespace seconv.libse.Forms.FixCommonErrors
 {
     public static class Helper
     {

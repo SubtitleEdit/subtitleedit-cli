@@ -1,4 +1,4 @@
-﻿namespace SeCli.libse.ContainerFormats.TransportStream
+﻿namespace seconv.libse.ContainerFormats.TransportStream
 {
     /// <summary>
     /// http://www.mpucoder.com/DVD/pes-hdr.html

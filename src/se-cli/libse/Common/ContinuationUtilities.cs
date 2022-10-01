@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
-using SeCli.libse.Enums;
+using seconv.libse.Enums;
 
-namespace SeCli.libse.Common
+namespace seconv.libse.Common
 {
     public static class ContinuationUtilities
     {

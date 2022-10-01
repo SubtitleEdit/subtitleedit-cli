@@ -1,8 +1,8 @@
 ﻿using System.Text;
-using SeCli.libse.Common;
-using SeCli.libse.Forms.FixCommonErrors;
+using seconv.libse.Common;
+using seconv.libse.Forms.FixCommonErrors;
 
-namespace SeCli.libse.Forms
+namespace seconv.libse.Forms
 {
     public class RemoveTextForHI
     {

@@ -1,4 +1,4 @@
-﻿namespace SeCli.libse.Common
+﻿namespace seconv.libse.Common
 {
     /// <summary>
     /// Language codes according to ISO 639.2 https://www.loc.gov/standards/iso639-2/php/code_list.php

@@ -27,7 +27,7 @@
 using System.Globalization;
 using System.Text;
 
-namespace SeCli.libse.Common
+namespace seconv.libse.Common
 {
 #pragma warning disable 1591
     public class ParserException : Exception

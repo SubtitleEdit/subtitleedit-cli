@@ -1,8 +1,8 @@
 ﻿using System.Text;
-using SeCli.libse.Enums;
-using SeCli.libse.SubtitleFormats;
+using seconv.libse.Enums;
+using seconv.libse.SubtitleFormats;
 
-namespace SeCli.libse.Common
+namespace seconv.libse.Common
 {
     public class Subtitle
     {

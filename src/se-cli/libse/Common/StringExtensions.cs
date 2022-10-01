@@ -1,8 +1,8 @@
 ﻿using System.Globalization;
 using System.Text;
-using SeCli.libse.Common.TextLengthCalculator;
+using seconv.libse.Common.TextLengthCalculator;
 
-namespace SeCli.libse.Common
+namespace seconv.libse.Common
 {
     public static class StringExtensions
     {

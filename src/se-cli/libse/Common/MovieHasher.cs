@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace SeCli.libse.Common
+namespace seconv.libse.Common
 {
     /// <summary>
     /// Hash from OpenSubtitles: http://trac.opensubtitles.org/projects/opensubtitles/wiki/HashSourceCodes

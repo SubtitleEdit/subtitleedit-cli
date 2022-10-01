@@ -1,8 +1,8 @@
 ﻿using System.Globalization;
 using System.Text;
-using SeCli.libse.SubtitleFormats;
+using seconv.libse.SubtitleFormats;
 
-namespace SeCli.libse.Common
+namespace seconv.libse.Common
 {
     public class UnknownFormatImporterJson
     {

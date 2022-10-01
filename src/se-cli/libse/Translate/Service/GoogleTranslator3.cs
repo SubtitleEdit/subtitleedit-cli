@@ -1,10 +1,10 @@
 ﻿using System.Net.Http.Headers;
 using System.Text;
 using System.Text.RegularExpressions;
-using SeCli.libse.Common;
-using SeCli.libse.SubtitleFormats;
+using seconv.libse.Common;
+using seconv.libse.SubtitleFormats;
 
-namespace SeCli.libse.Translate.Service
+namespace seconv.libse.Translate.Service
 {
     /// <summary>
     /// Google translate via Google Cloud V3 API - see https://cloud.google.com/translate/

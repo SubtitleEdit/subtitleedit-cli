@@ -1,7 +1,7 @@
-﻿using SeCli.libse.Common;
-using SeCli.libse.ContainerFormats.Mp4;
+﻿using seconv.libse.Common;
+using seconv.libse.ContainerFormats.Mp4;
 
-namespace SeCli.libse.SubtitleFormats
+namespace seconv.libse.SubtitleFormats
 {
     /// <summary>
     /// CMFT - "Common Media application Format Text"

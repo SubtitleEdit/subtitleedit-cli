@@ -3,10 +3,10 @@ using System.Globalization;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
-using SeCli.libse.Common.TextLengthCalculator;
-using SeCli.libse.Enums;
+using seconv.libse.Common.TextLengthCalculator;
+using seconv.libse.Enums;
 
-namespace SeCli.libse.Common
+namespace seconv.libse.Common
 {
     // The settings classes are built for easy xml-serialization (makes save/load code simple)
     // ...but the built-in serialization is too slow - so a custom (de-)serialization has been used!

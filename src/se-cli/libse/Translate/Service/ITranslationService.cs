@@ -1,4 +1,4 @@
-﻿namespace SeCli.libse.Translate.Service
+﻿namespace seconv.libse.Translate.Service
 {
     public interface ITranslationService : ITranslationStrategy
     {

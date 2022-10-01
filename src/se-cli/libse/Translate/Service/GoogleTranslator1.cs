@@ -1,9 +1,9 @@
 ﻿using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-using SeCli.libse.Common;
+using seconv.libse.Common;
 
-namespace SeCli.libse.Translate.Service
+namespace seconv.libse.Translate.Service
 {
     /// <summary>
     /// Google translate via Google V1 API - see https://cloud.google.com/translate/

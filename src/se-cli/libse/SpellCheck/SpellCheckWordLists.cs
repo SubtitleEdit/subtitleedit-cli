@@ -1,10 +1,10 @@
 ﻿using System.Text;
 using System.Xml;
-using SeCli.libse.Common;
-using SeCli.libse.Dictionaries;
-using SeCli.libse.Interfaces;
+using seconv.libse.Common;
+using seconv.libse.Dictionaries;
+using seconv.libse.Interfaces;
 
-namespace SeCli.libse.SpellCheck
+namespace seconv.libse.SpellCheck
 {
 
     public class SpellCheckWordLists

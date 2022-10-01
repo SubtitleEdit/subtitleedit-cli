@@ -1,7 +1,7 @@
-﻿using SeCli.libse.Common;
-using SeCli.libse.Enums;
+﻿using seconv.libse.Common;
+using seconv.libse.Enums;
 
-namespace SeCli.libse.SpellCheck
+namespace seconv.libse.SpellCheck
 {
     public class UndoObject
     {

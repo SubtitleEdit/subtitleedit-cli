@@ -2,7 +2,7 @@
 
 using System.Runtime.Serialization;
 
-namespace SeCli.libse.ContainerFormats
+namespace seconv.libse.ContainerFormats
 {
     #region RiffParserException
 

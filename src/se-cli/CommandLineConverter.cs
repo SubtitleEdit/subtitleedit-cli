@@ -1,14 +1,14 @@
-﻿using System.Drawing;
+﻿using seconv.libse.Common;
+using seconv.libse.ContainerFormats.Matroska;
+using seconv.libse.ContainerFormats.Mp4;
+using seconv.libse.Forms;
+using seconv.libse.SubtitleFormats;
+using System.Drawing;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
-using SeCli.libse.Common;
-using SeCli.libse.ContainerFormats.Matroska;
-using SeCli.libse.ContainerFormats.Mp4;
-using SeCli.libse.Forms;
-using SeCli.libse.SubtitleFormats;
 
-namespace SeCli
+namespace seconv
 {
 
     public static class CommandLineConverter
@@ -49,43 +49,35 @@ namespace SeCli
 
         internal static void ConvertOrReturn(string productIdentifier, string[] commandLineArguments)
         {
-
             _stdOutWriter = new StreamWriter(Console.OpenStandardOutput()) { AutoFlush = true };
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
             if (commandLineArguments.Length > 1)
             {
-                var action = (Func<string[], int>)null;
-
                 var firstArgument = commandLineArguments[1].Trim().ToLowerInvariant();
-                if (firstArgument == "/convert" || firstArgument == "-convert")
-                {
-                    action = Convert;
-                }
-                else if (firstArgument == "/help" || firstArgument == "-help" || firstArgument == "/?" || firstArgument == "-?")
+                var action = Convert;
+
+                if (firstArgument is "/help" or "-help" or "/?" or "-?")
                 {
                     action = Help;
                 }
 
-                if (action != null)
-                {
-                    _currentFolder = Directory.GetCurrentDirectory();
-                    _stdOutWriter.WriteLine();
-                    _stdOutWriter.WriteLine($"{productIdentifier} - Batch converter");
-                    _stdOutWriter.WriteLine();
-                    var result = action(commandLineArguments);
-                    Environment.Exit(result);
-                }
+                _currentFolder = Directory.GetCurrentDirectory();
+                _stdOutWriter.WriteLine();
+                _stdOutWriter.WriteLine($"{productIdentifier} - Batch converter");
+                _stdOutWriter.WriteLine();
+                var result = action(commandLineArguments);
+                Environment.Exit(result);
             }
         }
 
         private static int Help(string[] arguments)
         {
-            var secondArgument = arguments.Length > 2 ? arguments[2].Trim().ToLowerInvariant() : null;
-            if (secondArgument == "formats" || secondArgument == "/formats" || secondArgument == "-formats" || secondArgument == "/list" || secondArgument == "-list")
+            var secondArgument = arguments.Length > 1 ? arguments[1].Trim().ToLowerInvariant() : null;
+            if (secondArgument is "formats" or "/formats" or "-formats" or "/list" or "-list")
             {
                 _stdOutWriter.WriteLine("- Supported formats (input/output):");
-                foreach (SubtitleFormat format in SubtitleFormat.AllSubtitleFormats)
+                foreach (var format in SubtitleFormat.AllSubtitleFormats)
                 {
                     _stdOutWriter.WriteLine("    " + format.Name.RemoveChar(' '));
                 }
@@ -107,30 +99,32 @@ namespace SeCli
             }
             else
             {
-                _stdOutWriter.WriteLine("- Usage: SubtitleEdit /convert <pattern> <name-of-format-without-spaces> [<optional-parameters>]");
+                _stdOutWriter.WriteLine("- Usage: seconv <pattern> <name-of-format-without-spaces> [<optional-parameters>]");
                 _stdOutWriter.WriteLine();
                 _stdOutWriter.WriteLine("    pattern:");
                 _stdOutWriter.WriteLine("        one or more file name patterns separated by commas");
                 _stdOutWriter.WriteLine("        relative patterns are relative to /inputfolder if specified");
                 _stdOutWriter.WriteLine("    optional-parameters:");
-                _stdOutWriter.WriteLine("        /offset:hh:mm:ss:ms");
-                _stdOutWriter.WriteLine("        /fps:<frame rate>");
-                _stdOutWriter.WriteLine("        /targetfps:<frame rate>");
-                _stdOutWriter.WriteLine("        /encoding:<encoding name>");
-                _stdOutWriter.WriteLine("        /pac-codepage:<code page>");
-                _stdOutWriter.WriteLine("        /track-number:<comma separated track number list>");
-                _stdOutWriter.WriteLine("        /resolution:<width>x<height>");
-                _stdOutWriter.WriteLine("        /inputfolder:<folder name>");
-                _stdOutWriter.WriteLine("        /outputfolder:<folder name>");
-                _stdOutWriter.WriteLine("        /outputfilename:<file name> (for single file only)");
-                _stdOutWriter.WriteLine("        /overwrite");
-                _stdOutWriter.WriteLine("        /forcedonly");
-                _stdOutWriter.WriteLine("        /teletextonly");
-                _stdOutWriter.WriteLine("        /multiplereplace:<comma separated file name list> ('.' represents the default replace rules)");
-                _stdOutWriter.WriteLine("        /multiplereplace (equivalent to /multiplereplace:.)");
-                _stdOutWriter.WriteLine("        /ebuheaderfile:<file name>");
-                _stdOutWriter.WriteLine("        /renumber:<starting number>");
                 _stdOutWriter.WriteLine("        /adjustduration:<ms>");
+                _stdOutWriter.WriteLine("        /deletecontains:<word>");
+                _stdOutWriter.WriteLine("        /ebuheaderfile:<file name>");
+                _stdOutWriter.WriteLine("        /encoding:<encoding name>");
+                _stdOutWriter.WriteLine("        /forcedonly");
+                _stdOutWriter.WriteLine("        /fps:<frame rate>");
+                _stdOutWriter.WriteLine("        /inputfolder:<folder name>");
+                _stdOutWriter.WriteLine("        /multiplereplace (equivalent to /multiplereplace:.)");
+                _stdOutWriter.WriteLine("        /multiplereplace:<comma separated file name list> ('.' represents the default replace rules)");
+                _stdOutWriter.WriteLine("        /ocrengine:<ocr engine> (\"tesseract\"/\"nOCR\")");
+                _stdOutWriter.WriteLine("        /offset:hh:mm:ss:ms");
+                _stdOutWriter.WriteLine("        /outputfilename:<file name> (for single file only)");
+                _stdOutWriter.WriteLine("        /outputfolder:<folder name>");
+                _stdOutWriter.WriteLine("        /overwrite");
+                _stdOutWriter.WriteLine("        /pac-codepage:<code page>");
+                _stdOutWriter.WriteLine("        /renumber:<starting number>");
+                _stdOutWriter.WriteLine("        /resolution:<width>x<height>");
+                _stdOutWriter.WriteLine("        /targetfps:<frame rate>");
+                _stdOutWriter.WriteLine("        /teletextonly");
+                _stdOutWriter.WriteLine("        /track-number:<comma separated track number list>");
                 //_stdOutWriter.WriteLine("        /ocrdb:<ocr db/dictionary> (e.g. \"eng\" or \"latin\")");
                 _stdOutWriter.WriteLine("      The following operations are applied in command line order");
                 _stdOutWriter.WriteLine("      from left to right, and can be specified multiple times.");
@@ -157,22 +151,22 @@ namespace SeCli
             return 0;
         }
 
-        private static int Convert(string[] arguments) // E.g.: /convert *.txt SubRip
+        private static int Convert(string[] arguments) // E.g.: *.txt SubRip
         {
-            if (arguments.Length < 4)
+            if (arguments.Length < 3)
             {
                 return Help(arguments);
             }
 
-            int count = 0;
-            int converted = 0;
-            int errors = 0;
+            var count = 0;
+            var converted = 0;
+            var errors = 0;
             var sw = System.Diagnostics.Stopwatch.StartNew();
             try
             {
-                var pattern = arguments[2].Trim();
+                var pattern = arguments[1].Trim();
 
-                var targetFormat = arguments[3].Trim().RemoveChar(' ').ToLowerInvariant();
+                var targetFormat = arguments[2].Trim().RemoveChar(' ').ToLowerInvariant();
 
                 // name shortcuts
                 if (targetFormat == "ass")
@@ -208,7 +202,8 @@ namespace SeCli
                     targetFormat = Ebu.NameOfFormat.RemoveChar(' ').ToLowerInvariant();
                 }
 
-                var unconsumedArguments = arguments.Skip(4).Select(s => s.Trim()).Where(s => s.Length > 0).ToList();
+                var unconsumedArguments = arguments.Skip(3).Select(s => s.Trim()).Where(s => s.Length > 0).ToList();
+                var deleteContains = GetDeleteContains(unconsumedArguments);
                 var offset = GetOffset(unconsumedArguments);
                 var resolution = GetResolution(unconsumedArguments);
                 var renumber = GetRenumber(unconsumedArguments);
@@ -219,9 +214,6 @@ namespace SeCli
                 {
                     Configuration.Settings.General.CurrentFrameRate = frameRate.Value;
                 }
-
-                var ocrEngine = GetOcrEngine(unconsumedArguments);
-                var ocrDb = GetOcrDb(unconsumedArguments);
 
                 var targetEncoding = new TextEncoding(Encoding.UTF8, TextEncoding.Utf8WithBom);
                 if (Configuration.Settings.General.DefaultEncoding == TextEncoding.Utf8WithoutBom)
@@ -292,7 +284,7 @@ namespace SeCli
                     }
                 }
 
-                int pacCodePage = -1;
+                var pacCodePage = -1;
                 {
                     var pcp = GetArgument(unconsumedArguments, "pac-codepage:");
                     if (pcp.Length > 0)
@@ -523,7 +515,7 @@ namespace SeCli
                                                         }
                                                     }
 
-                                                    BatchConvertSave(targetFormat, offset, targetEncoding, outputFolder, string.Empty, count, ref converted, ref errors, formats, newFileName, sub, format, null, overwrite, pacCodePage, targetFrameRate, multipleReplaceImportFiles, actions, resolution, true, renumber: renumber, adjustDurationMs: adjustDurationMs);
+                                                    BatchConvertSave(targetFormat, offset, deleteContains, targetEncoding, outputFolder, string.Empty, count, ref converted, ref errors, formats, newFileName, sub, format, null, overwrite, pacCodePage, targetFrameRate, multipleReplaceImportFiles, actions, resolution, true, renumber: renumber, adjustDurationMs: adjustDurationMs);
                                                     done = true;
                                                 }
                                             }
@@ -543,7 +535,7 @@ namespace SeCli
                             }
                         }
 
-           
+
                         if ((fileInfo.Extension == ".mp4" || fileInfo.Extension == ".m4v" || fileInfo.Extension == ".3gp") && fileInfo.Length > 10000)
                         {
                             var mp4Parser = new MP4Parser(fileName);
@@ -560,7 +552,7 @@ namespace SeCli
                                     {
                                         var newFileName = fileName.Substring(0, fileName.LastIndexOf('.')) + ".mp4";
                                         sub.Paragraphs.AddRange(track.Mdia.Minf.Stbl.GetParagraphs());
-                                        BatchConvertSave(targetFormat, offset, targetEncoding, outputFolder, targetFileName, count, ref converted, ref errors, formats, newFileName, sub, format, null, overwrite, pacCodePage, targetFrameRate, multipleReplaceImportFiles, actions, resolution, true, renumber: renumber, adjustDurationMs: adjustDurationMs);
+                                        BatchConvertSave(targetFormat, offset, deleteContains, targetEncoding, outputFolder, targetFileName, count, ref converted, ref errors, formats, newFileName, sub, format, null, overwrite, pacCodePage, targetFrameRate, multipleReplaceImportFiles, actions, resolution, true, renumber: renumber, adjustDurationMs: adjustDurationMs);
                                         done = true;
                                     }
                                 }
@@ -637,7 +629,7 @@ namespace SeCli
                         }
                         else if (!done)
                         {
-                            BatchConvertSave(targetFormat, offset, targetEncoding, outputFolder, targetFileName, count, ref converted, ref errors, formats, fileName, sub, format, null, overwrite, pacCodePage, targetFrameRate, multipleReplaceImportFiles, actions, resolution, ebuHeaderFile: ebuHeaderFile, renumber: renumber, adjustDurationMs: adjustDurationMs);
+                            BatchConvertSave(targetFormat, offset, deleteContains, targetEncoding, outputFolder, targetFileName, count, ref converted, ref errors, formats, fileName, sub, format, null, overwrite, pacCodePage, targetFrameRate, multipleReplaceImportFiles, actions, resolution, ebuHeaderFile: ebuHeaderFile, renumber: renumber, adjustDurationMs: adjustDurationMs);
                         }
                     }
                     else
@@ -671,20 +663,6 @@ namespace SeCli
 
             return (count == converted && errors == 0) ? 0 : 1;
         }
-
-        private static SubtitleFormat GetTargetformat(string targetFormat, IEnumerable<SubtitleFormat> formats)
-        {
-            string targetFormatNoWhiteSpace = targetFormat.RemoveChar(' ');
-            foreach (var sf in formats)
-            {
-                if (sf.IsTextBased && sf.Name.RemoveChar(' ').Equals(targetFormatNoWhiteSpace, StringComparison.OrdinalIgnoreCase))
-                {
-                    return sf;
-                }
-            }
-            return null;
-        }
-
 
         /// <summary>
         /// Gets a frame rate argument from the command line
@@ -733,31 +711,9 @@ namespace SeCli
             return null;
         }
 
-        private static string GetOcrEngine(IList<string> commandLineArguments)
+        private static string GetDeleteContains(IList<string> commandLineArguments)
         {
-            var ocrEngine = GetArgument(commandLineArguments, "ocrengine:");
-            if (ocrEngine.Length > 0)
-            {
-                if (string.Equals(ocrEngine, "tesseract", StringComparison.InvariantCultureIgnoreCase) || string.Equals(ocrEngine, "nocr", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    return ocrEngine;
-                }
-
-                throw new FormatException($"The /ocrengine value '{ocrEngine}' is invalid - 'tesseract' or 'nOCR' expected.");
-            }
-
-            return "tesseract";
-        }
-
-        private static string GetOcrDb(IList<string> commandLineArguments)
-        {
-            var ocrDb = GetArgument(commandLineArguments, "ocrdb:");
-            if (ocrDb.Length > 0)
-            {
-                return ocrDb;
-            }
-
-            return null;
+            return GetArgument(commandLineArguments, "deletecontains:", string.Empty);
         }
 
         /// <summary>
@@ -939,7 +895,7 @@ namespace SeCli
         }
 
 
-        internal static bool BatchConvertSave(string targetFormat, TimeSpan offset, TextEncoding targetEncoding, string outputFolder, string targetFileName, int count, ref int converted, ref int errors,
+        internal static bool BatchConvertSave(string targetFormat, TimeSpan offset, string deleteContains, TextEncoding targetEncoding, string outputFolder, string targetFileName, int count, ref int converted, ref int errors,
                                               List<SubtitleFormat> formats, string fileName, Subtitle sub, SubtitleFormat format, object binaryParagraphs, bool overwrite, int pacCodePage,
                                               double? targetFrameRate, ICollection<string> multipleReplaceImportFiles, List<BatchAction> actions = null,
                                               Point? resolution = null, bool autoDetectLanguage = false, BatchConvertProgress progressCallback = null, string ebuHeaderFile = null, string ocrEngine = null, string preExt = null, int? renumber = null, double? adjustDurationMs = null)
@@ -958,6 +914,12 @@ namespace SeCli
                 if (offset.Ticks != 0)
                 {
                     sub.AddTimeToAllParagraphs(offset);
+                }
+
+                // delete lines containing a specific text
+                if (!string.IsNullOrEmpty(deleteContains))
+                {
+                    DeleteContains(sub, deleteContains);
                 }
 
                 // adjust frame rate
@@ -1342,9 +1304,28 @@ namespace SeCli
             return sub;
         }
 
-        internal static bool IsImageBased(SubtitleFormat format)
+        internal static void DeleteContains(Subtitle sub, string deleteContains)
         {
-            return format is TimedTextImage || format is FinalCutProImage || format is SpuImage || format is Dost || format is SeImageHtmlIndex || format is BdnXml;
+            if (string.IsNullOrEmpty(deleteContains))
+            {
+                return;
+            }
+
+            var deleted = 0;
+            for (var index = sub.Paragraphs.Count - 1; index >= 0; index--)
+            {
+                var paragraph = sub.Paragraphs[index];
+                if (paragraph.Text.Contains(deleteContains, StringComparison.Ordinal))
+                {
+                    deleted++;
+                    sub.Paragraphs.RemoveAt(index);
+                }
+            }
+
+            if (deleted > 0)
+            {
+                sub.Renumber();
+            }
         }
 
         internal static string FormatOutputFileNameForBatchConvert(string fileName, string extension, string outputFolder, bool overwrite, string targetFileName = null)

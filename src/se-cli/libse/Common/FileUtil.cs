@@ -1,11 +1,11 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
-using SeCli.libse.ContainerFormats;
-using SeCli.libse.ContainerFormats.Matroska;
-using SeCli.libse.ContainerFormats.Mp4;
-using SeCli.libse.ContainerFormats.TransportStream;
+using seconv.libse.ContainerFormats;
+using seconv.libse.ContainerFormats.Matroska;
+using seconv.libse.ContainerFormats.Mp4;
+using seconv.libse.ContainerFormats.TransportStream;
 
-namespace SeCli.libse.Common
+namespace seconv.libse.Common
 {
     /// <summary>
     /// File related utilities.

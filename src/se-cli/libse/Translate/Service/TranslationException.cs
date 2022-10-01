@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace SeCli.libse.Translate.Service
+namespace seconv.libse.Translate.Service
 {
     public class TranslationException : Exception
     {

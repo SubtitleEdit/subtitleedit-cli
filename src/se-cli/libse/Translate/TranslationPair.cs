@@ -1,4 +1,4 @@
-﻿namespace SeCli.libse.Translate
+﻿namespace seconv.libse.Translate
 {
     public class TranslationPair : IEquatable<TranslationPair>
     {

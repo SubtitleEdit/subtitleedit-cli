@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
-using SeCli.libse.Common;
+using seconv.libse.Common;
 
-namespace SeCli.libse.NetflixQualityCheck
+namespace seconv.libse.NetflixQualityCheck
 {
     /// <summary>
     /// From 1 to 10, numbers should be written out: one, two, three, etc.

@@ -1,9 +1,9 @@
 ﻿using System.Drawing;
 using System.Text;
 using System.Text.RegularExpressions;
-using SeCli.libse.Common;
+using seconv.libse.Common;
 
-namespace SeCli.libse.SubtitleFormats
+namespace seconv.libse.SubtitleFormats
 {
     /// <summary>
     /// ARIB B-36 - see http://www.arib.or.jp/english/html/overview/doc/2-STD-B36v2_3.pdf (ARIB = Japan Association of Radio Industries and Businesses)

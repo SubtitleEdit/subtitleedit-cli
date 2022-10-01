@@ -1,8 +1,8 @@
 ﻿using System.Globalization;
-using SeCli.libse.Common;
-using SeCli.libse.Interfaces;
+using seconv.libse.Common;
+using seconv.libse.Interfaces;
 
-namespace SeCli.libse.Forms.FixCommonErrors
+namespace seconv.libse.Forms.FixCommonErrors
 {
     /// <summary>
     /// Will try to fix issues with Spanish special letters ¿? and ¡!.

@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
-using SeCli.libse.Common;
+using seconv.libse.Common;
 
-namespace SeCli.libse.SubtitleFormats
+namespace seconv.libse.SubtitleFormats
 {
     public class AudacityLabels : SubtitleFormat
     {

@@ -1,4 +1,4 @@
-﻿namespace SeCli.libse.ContainerFormats.Mp4
+﻿namespace seconv.libse.ContainerFormats.Mp4
 {
     public class SampleTimeInfo
     {

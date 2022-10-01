@@ -1,7 +1,6 @@
 ﻿using System.Drawing;
-using SeCli.libse.Common;
 
-namespace SeCli.libse.ContainerFormats.TransportStream
+namespace seconv.libse.ContainerFormats.TransportStream
 {
     public class ObjectDataSegment
     {

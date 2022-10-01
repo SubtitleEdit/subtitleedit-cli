@@ -1,4 +1,4 @@
-﻿namespace SeCli.libse.Common
+﻿namespace seconv.libse.Common
 {
     // The MurmurHash3 algorithm was created by Austin Appleby and put into the public domain.  See http://code.google.com/p/smhasher
     // This code is based on https://gist.github.com/automatonic/3725443

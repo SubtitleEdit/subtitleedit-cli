@@ -1,4 +1,4 @@
-﻿namespace SeCli.libse.SubtitleFormats
+﻿namespace seconv.libse.SubtitleFormats
 {
     public class SamiModern : Sami
     {

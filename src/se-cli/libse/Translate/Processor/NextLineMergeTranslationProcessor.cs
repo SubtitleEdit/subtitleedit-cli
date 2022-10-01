@@ -1,7 +1,7 @@
 ﻿using System.Text;
-using SeCli.libse.Common;
+using seconv.libse.Common;
 
-namespace SeCli.libse.Translate.Processor
+namespace seconv.libse.Translate.Processor
 {
     /// <summary>
     ///  allows a maximum of 2 consecutive lines to be merged.

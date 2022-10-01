@@ -1,8 +1,8 @@
 ﻿using System.Globalization;
 using System.Text;
-using SeCli.libse.Dictionaries;
+using seconv.libse.Dictionaries;
 
-namespace SeCli.libse.Common
+namespace seconv.libse.Common
 {
     public class FixCasing
     {

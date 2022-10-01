@@ -1,6 +1,6 @@
-﻿using SeCli.libse.Common;
+﻿using seconv.libse.Common;
 
-namespace SeCli.libse.Translate.Service
+namespace seconv.libse.Translate.Service
 {
     public interface ITranslationStrategy
     {

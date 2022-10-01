@@ -2,7 +2,7 @@
 // C# port by J.D. Purcell
 // You may use, copy, modify this code for any purpose and without fee.
 
-namespace SeCli.libse.Common
+namespace seconv.libse.Common
 {
     public class RealFFT
     {

@@ -1,7 +1,6 @@
-﻿using System.IO.Compression;
-using SeCli.libse.Common;
+﻿using seconv.libse.Common;
 
-namespace SeCli.libse.NetflixQualityCheck
+namespace seconv.libse.NetflixQualityCheck
 {
     public class NetflixCheckGlyph : INetflixQualityChecker
     {

@@ -1,8 +1,8 @@
 ﻿using System.Text;
-using SeCli.libse.Common;
-using SeCli.libse.ContainerFormats.TransportStream;
+using seconv.libse.Common;
+using seconv.libse.ContainerFormats.TransportStream;
 
-namespace SeCli.libse.SubtitleFormats
+namespace seconv.libse.SubtitleFormats
 {
     public static class StreamExtensions
     {

@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace SeCli.libse.ContainerFormats.TransportStream
+namespace seconv.libse.ContainerFormats.TransportStream
 {
     public class ProgramMapTableDescriptor
     {

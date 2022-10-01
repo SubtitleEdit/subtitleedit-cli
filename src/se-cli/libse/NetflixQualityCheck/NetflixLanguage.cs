@@ -1,4 +1,4 @@
-﻿namespace SeCli.libse.NetflixQualityCheck
+﻿namespace seconv.libse.NetflixQualityCheck
 {
     public static class NetflixLanguage
     {

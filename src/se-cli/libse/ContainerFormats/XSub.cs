@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
-using SeCli.libse.Common;
+using seconv.libse.Common;
 
-namespace SeCli.libse.ContainerFormats
+namespace seconv.libse.ContainerFormats
 {
     public class XSub
     {

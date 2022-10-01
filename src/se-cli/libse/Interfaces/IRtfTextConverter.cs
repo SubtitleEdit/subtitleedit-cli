@@ -1,4 +1,4 @@
-﻿namespace SeCli.libse.Interfaces
+﻿namespace seconv.libse.Interfaces
 {
     public interface IRtfTextConverter
     {

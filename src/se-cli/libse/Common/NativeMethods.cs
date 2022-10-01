@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SeCli.libse.Common
+namespace seconv.libse.Common
 {
     internal static class NativeMethods
     {

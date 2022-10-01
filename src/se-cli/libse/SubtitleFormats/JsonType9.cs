@@ -1,7 +1,7 @@
 ﻿using System.Text;
-using SeCli.libse.Common;
+using seconv.libse.Common;
 
-namespace SeCli.libse.SubtitleFormats
+namespace seconv.libse.SubtitleFormats
 {
     /// <summary>
     /// CBTNuggets, e.g. https://portal.cbtnuggets.com/mediav2/caption/54f4cf34fcb8f7d56e0001bf_10x.json

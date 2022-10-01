@@ -1,8 +1,8 @@
 using System.Text;
-using SeCli.libse.Common;
-using SeCli.libse.Interfaces;
+using seconv.libse.Common;
+using seconv.libse.Interfaces;
 
-namespace SeCli.libse.SubtitleFormats
+namespace seconv.libse.SubtitleFormats
 {
     /// <summary>
     /// The PAC format was developed by Screen Electronics

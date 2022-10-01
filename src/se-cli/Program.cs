@@ -1,4 +1,4 @@
-﻿using SeCli;
+﻿using seconv;
 
 var commandLineArgs = Environment.GetCommandLineArgs();
 if (commandLineArgs.Length > 1)

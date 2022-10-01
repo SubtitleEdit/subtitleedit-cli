@@ -1,4 +1,4 @@
-﻿namespace SeCli.libse.ContainerFormats.MaterialExchangeFormat
+﻿namespace seconv.libse.ContainerFormats.MaterialExchangeFormat
 {
     public enum KeyIdentifier
     {

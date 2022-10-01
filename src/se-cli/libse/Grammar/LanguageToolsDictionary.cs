@@ -1,4 +1,4 @@
-﻿namespace SeCli.libse.Grammar
+﻿namespace seconv.libse.Grammar
 {
     public class LanguageToolsDictionary : IGrammarDictionary
     {

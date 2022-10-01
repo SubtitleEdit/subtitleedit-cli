@@ -1,7 +1,7 @@
 ﻿using System.Text;
-using SeCli.libse.Enums;
+using seconv.libse.Enums;
 
-namespace SeCli.libse.Common
+namespace seconv.libse.Common
 {
     public class DialogSplitMerge
     {

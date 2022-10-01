@@ -1,8 +1,8 @@
 ﻿using System.Text;
 using System.Xml;
-using SeCli.libse.Common;
+using seconv.libse.Common;
 
-namespace SeCli.libse.ContainerFormats.TransportStream
+namespace seconv.libse.ContainerFormats.TransportStream
 {
     /// <summary>
     /// Manzanita transport stream parser.

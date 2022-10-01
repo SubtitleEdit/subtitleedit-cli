@@ -1,8 +1,8 @@
 ﻿using System.Text;
 using System.Xml;
-using SeCli.libse.Common;
+using seconv.libse.Common;
 
-namespace SeCli.libse.SubtitleFormats
+namespace seconv.libse.SubtitleFormats
 {
 
     //<?xml version="1.0" encoding="UTF-8"?>

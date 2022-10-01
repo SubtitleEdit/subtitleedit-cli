@@ -1,7 +1,7 @@
 ﻿using System.Text;
-using static SeCli.libse.Common.SeJsonParser;
+using static seconv.libse.Common.SeJsonParser;
 
-namespace SeCli.libse.Common
+namespace seconv.libse.Common
 {
     /// <summary>
     /// Validate json file - a simple C# json validator.

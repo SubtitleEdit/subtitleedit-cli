@@ -1,8 +1,8 @@
 ﻿using System.Text;
 using System.Xml;
-using SeCli.libse.Common;
+using seconv.libse.Common;
 
-namespace SeCli.libse.SubtitleFormats
+namespace seconv.libse.SubtitleFormats
 {
     //  - Mom, when you were my age&#13;what did you want to do?
     public class FinalCutProTestXml : SubtitleFormat

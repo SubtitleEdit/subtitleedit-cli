@@ -1,9 +1,9 @@
 ﻿using System.Text;
 using System.Xml;
-using SeCli.libse.Common;
-using SeCli.libse.Enums;
+using seconv.libse.Common;
+using seconv.libse.Enums;
 
-namespace SeCli.libse.SubtitleFormats
+namespace seconv.libse.SubtitleFormats
 {
     public class YouTubeAnnotations : SubtitleFormat
     {

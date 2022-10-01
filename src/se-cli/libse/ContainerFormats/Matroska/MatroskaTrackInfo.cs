@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace SeCli.libse.ContainerFormats.Matroska
+namespace seconv.libse.ContainerFormats.Matroska
 {
     public class MatroskaTrackInfo
     {

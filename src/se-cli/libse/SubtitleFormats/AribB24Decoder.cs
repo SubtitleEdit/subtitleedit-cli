@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace SeCli.libse.SubtitleFormats
+namespace seconv.libse.SubtitleFormats
 {
 
     /// <summary>

@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace SeCli.libse.Common
+namespace seconv.libse.Common
 {
     /// <summary>
     /// Configuration settings via Singleton pattern

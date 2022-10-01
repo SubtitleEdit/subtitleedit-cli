@@ -1,8 +1,8 @@
 ﻿using System.Text;
-using SeCli.libse.Common;
-using SeCli.libse.ContainerFormats.Mp4;
+using seconv.libse.Common;
+using seconv.libse.ContainerFormats.Mp4;
 
-namespace SeCli.libse.SubtitleFormats
+namespace seconv.libse.SubtitleFormats
 {
     public class IsmtDfxp : SubtitleFormat
     {

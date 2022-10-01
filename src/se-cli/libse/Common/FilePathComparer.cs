@@ -1,4 +1,4 @@
-﻿namespace SeCli.libse.Common
+﻿namespace seconv.libse.Common
 {
     public abstract class FilePathComparer : IEqualityComparer<string>, IComparer<string>
     {

@@ -1,8 +1,7 @@
 ﻿using System.Drawing;
-using SeCli.libse.Common;
-using SeCli.libse.Interfaces;
+using seconv.libse.Common;
 
-namespace SeCli.libse.ContainerFormats.TransportStream
+namespace seconv.libse.ContainerFormats.TransportStream
 {
     public class TransportStreamSubtitle 
     {

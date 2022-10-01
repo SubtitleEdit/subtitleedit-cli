@@ -7,7 +7,7 @@
 using System.IO.Compression;
 using System.Text;
 
-namespace SeCli.libse.Common
+namespace seconv.libse.Common
 {
     /// <summary>
     /// Zip archive decompression. Represents a Zip file.

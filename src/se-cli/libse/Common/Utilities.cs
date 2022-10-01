@@ -6,11 +6,11 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
-using SeCli.libse.Common.TextLengthCalculator;
-using SeCli.libse.ContainerFormats.Matroska;
-using SeCli.libse.SubtitleFormats;
+using seconv.libse.Common.TextLengthCalculator;
+using seconv.libse.ContainerFormats.Matroska;
+using seconv.libse.SubtitleFormats;
 
-namespace SeCli.libse.Common
+namespace seconv.libse.Common
 {
     public static class Utilities
     {

@@ -1,10 +1,10 @@
 ﻿using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
-using SeCli.libse.Common;
-using SeCli.libse.Interfaces;
+using seconv.libse.Common;
+using seconv.libse.Interfaces;
 
-namespace SeCli.libse.SubtitleFormats
+namespace seconv.libse.SubtitleFormats
 {
     /// <summary>
     /// EBU Subtitling data exchange format

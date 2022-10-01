@@ -1,4 +1,4 @@
-﻿namespace SeCli.libse.Enums
+﻿namespace seconv.libse.Enums
 {
     public enum DialogType
     {
