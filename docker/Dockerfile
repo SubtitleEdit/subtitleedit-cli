@@ -4,7 +4,6 @@ FROM bitnami/dotnet-sdk:6
 
 #Get the se cli code from github
 WORKDIR /workdir/subtitleedit-cli/src
-RUN git clone https://github.com/SubtitleEdit/subtitleedit-cli.git
 COPY ./src /workdir/subtitleedit-cli/src
 
 #Compile and publish
