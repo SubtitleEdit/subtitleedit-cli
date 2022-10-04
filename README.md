@@ -19,16 +19,19 @@ This was made due to https://github.com/SubtitleEdit/subtitleedit/issues/3568
 
 ### Build
 
-Be in the root directory of the repository, then run: `docker build -t se-convert:1.0 -f docker/Dockerfile .`
+Be in the root directory of the repository, then run:    
+```
+docker build -t seconv:1.0 -f docker/Dockerfile .
+```
 
-This is a multi stage build, which will first build and publish the project in a dotnet6 sdk container, then copy the application into a smaller ubuntu container for execution
+This is a multi stage build, it first builds the application, then creates the docker container for execution. 
 
 ### Run
 
 Example:
 
-`docker run --rm -it -v $(pwd)/subtitles:/subtitles se-convert:1.0  sample.srt pac`
+Navigate to the 'docker' folder, then execute:   
+```
+docker run --rm -it -v $(pwd)/subtitles:/subtitles seconv:1.0  sample.srt pac
+```
 
-You need to mount a directory to share and receive subtitles with/from the container. You could use the included 'subtitle' folder. Navigating into the 'docker' folder before executing the above command.
-
-Subtitles to convert should be put inside the 'subtitle' folder, converted subtitles will be created in the 'subtitles/out' folder. You can override this behavior by manually specifying '-inputfolder:/here' and '-outputfolder:/there' parameters, see subtitle edit help for details.
