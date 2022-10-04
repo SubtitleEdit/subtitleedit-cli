@@ -1,0 +1,11 @@
+﻿1
+00:00:00,000 --> 00:00:00,334
+Example subtitle docker-subtitle-edit
+
+2
+01:00:30,000 --> 01:00:32,000
+https://github.com/Wauter/docker-subtitle-edit
+
+3
+01:00:46,000 --> 01:00:48,000
+Headless subtitle edit in a docker container for batch conversion.
