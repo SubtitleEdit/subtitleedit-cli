@@ -17,7 +17,7 @@ LABEL maintainer="Wauter De Bruyne"
 COPY --from=0 /workdir/subtitleedit-cli/src/se-cli/bin/release/net6.0/ubuntu.22.04-x64/publish /secli
 
 # patch the runtime config, make executable
-COPY ./docker/seconv.runtimeconfig.json /secli/
+
 RUN chmod +x /secli/seconv
 
 # will expect subtitles here by default
