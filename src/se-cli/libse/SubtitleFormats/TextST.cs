@@ -1,6 +1,5 @@
-﻿using System.Text;
-using seconv.libse.Common;
-using seconv.libse.ContainerFormats.TransportStream;
+﻿using System.Drawing;
+using System.Text;
 
 namespace seconv.libse.SubtitleFormats
 {
@@ -64,6 +63,65 @@ namespace seconv.libse.SubtitleFormats
 
     public class TextST : SubtitleFormat
     {
+        public static int[] YCbCr2Rgb(int y, int cb, int cr, bool useBt601)
+        {
+            var rgb = new int[3];
+            double r, g, b;
+
+            y -= 16;
+            cb -= 128;
+            cr -= 128;
+
+            var y1 = y * 1.164383562;
+            if (useBt601)
+            {
+                /* BT.601 for YCbCr 16..235 -> RGB 0..255 (PC) */
+                r = y1 + cr * 1.596026317;
+                g = y1 - cr * 0.8129674985 - cb * 0.3917615979;
+                b = y1 + cb * 2.017232218;
+            }
+            else
+            {
+                /* BT.709 for YCbCr 16..235 -> RGB 0..255 (PC) */
+                r = y1 + cr * 1.792741071;
+                g = y1 - cr * 0.5329093286 - cb * 0.2132486143;
+                b = y1 + cb * 2.112401786;
+            }
+            rgb[0] = (int)(r + 0.5);
+            rgb[1] = (int)(g + 0.5);
+            rgb[2] = (int)(b + 0.5);
+            for (int i = 0; i < 3; i++)
+            {
+                if (rgb[i] < 0)
+                {
+                    rgb[i] = 0;
+                }
+                else if (rgb[i] > 255)
+                {
+                    rgb[i] = 255;
+                }
+            }
+            return rgb;
+        }
+
+        public class Palette
+        {
+            public int PaletteEntryId { get; set; }
+            public int Y { get; set; }
+            public int Cr { get; set; }
+            public int Cb { get; set; }
+            public int T { get; set; }
+
+            public Color Color
+            {
+                get
+                {
+                    var arr = YCbCr2Rgb(Y, Cb, Cr, false);
+                    return Color.FromArgb(T, arr[0], arr[1], arr[2]);
+                }
+            }
+        }
+
         public class RegionStyle
         {
             public RegionStyle()
@@ -144,6 +202,7 @@ namespace seconv.libse.SubtitleFormats
             public int NumberOfUserStyles { get; set; }
             public List<RegionStyle> RegionStyles { get; set; }
             public List<UserStyle> UserStyles { get; set; }
+            public List<Palette> Palettes { get; set; }
             public int NumberOfDialogPresentationSegments { get; set; }
 
             public DialogStyleSegment()
@@ -151,6 +210,7 @@ namespace seconv.libse.SubtitleFormats
                 PlayerStyleFlag = true;
                 RegionStyles = new List<RegionStyle>();
                 UserStyles = new List<UserStyle>();
+                Palettes = new List<Palette>();
             }
 
             public DialogStyleSegment(byte[] buffer)
@@ -218,10 +278,19 @@ namespace seconv.libse.SubtitleFormats
                 }
 
                 int numberOfPalettees = ((buffer[idx] << 8) + buffer[idx + 1]) / 5;
+                Palettes = new List<Palette>(numberOfPalettees);
                 idx += 2;
                 for (int i = 0; i < numberOfPalettees; i++)
                 {
-                    
+                    var palette = new Palette
+                    {
+                        PaletteEntryId = buffer[idx],
+                        Y = buffer[idx + 1],
+                        Cr = buffer[idx + 2],
+                        Cb = buffer[idx + 3],
+                        T = buffer[idx + 4]
+                    };
+                    Palettes.Add(palette);
                     idx += 5;
                 }
                 NumberOfDialogPresentationSegments = (buffer[idx] << 8) + buffer[idx + 1];
@@ -267,6 +336,16 @@ namespace seconv.libse.SubtitleFormats
                     foreach (var userStyle in UserStyles)
                     {
                         AddUserStyle(ms, userStyle);
+                    }
+
+                    ms.WriteWord(Palettes.Count * 5);
+                    foreach (var palette in Palettes)
+                    {
+                        ms.WriteByte((byte)palette.PaletteEntryId);
+                        ms.WriteByte((byte)palette.Y);
+                        ms.WriteByte((byte)palette.Cb);
+                        ms.WriteByte((byte)palette.Cr);
+                        ms.WriteByte((byte)palette.T);
                     }
 
                     return ms.ToArray();
@@ -342,7 +421,46 @@ namespace seconv.libse.SubtitleFormats
                     });
                     dss.NumberOfRegionStyles = dss.RegionStyles.Count;
 
-                   
+                    dss.Palettes.Add(new Palette
+                    {
+                        PaletteEntryId = 0,
+                        Y = 235,
+                        Cr = 128,
+                        Cb = 128,
+                        T = 0
+                    });
+                    dss.Palettes.Add(new Palette
+                    {
+                        PaletteEntryId = 1,
+                        Y = 16,
+                        Cr = 128,
+                        Cb = 128,
+                        T = 255
+                    });
+                    dss.Palettes.Add(new Palette
+                    {
+                        PaletteEntryId = 2,
+                        Y = 235,
+                        Cr = 128,
+                        Cb = 128,
+                        T = 0
+                    });
+                    dss.Palettes.Add(new Palette
+                    {
+                        PaletteEntryId = 3,
+                        Y = 235,
+                        Cr = 128,
+                        Cb = 128,
+                        T = 255
+                    });
+                    dss.Palettes.Add(new Palette
+                    {
+                        PaletteEntryId = 254,
+                        Y = 16,
+                        Cr = 128,
+                        Cb = 128,
+                        T = 0
+                    });
                     return dss;
                 }
             }
@@ -500,12 +618,14 @@ namespace seconv.libse.SubtitleFormats
             public UInt64 StartPts { get; set; }
             public UInt64 EndPts { get; set; }
             public bool PaletteUpdate { get; set; }
+            public List<Palette> PaletteUpdates { get; set; }
             public List<SubtitleRegion> Regions { get; set; }
 
             public DialogPresentationSegment(Paragraph paragraph, RegionStyle regionStyle)
             {
                 StartPts = (ulong)Math.Round(paragraph.StartTime.TotalMilliseconds * 90.0);
                 EndPts = (ulong)Math.Round(paragraph.EndTime.TotalMilliseconds * 90.0);
+                PaletteUpdates = new List<Palette>();
                 Regions = new List<SubtitleRegion>
                 {
                     new SubtitleRegion
@@ -662,12 +782,20 @@ namespace seconv.libse.SubtitleFormats
 
                 PaletteUpdate = (buffer[idx + 19] & 0b10000000) > 0;
                 idx += 20;
+                PaletteUpdates = new List<Palette>();
                 if (PaletteUpdate)
                 {
                     int numberOfPaletteEntries = buffer[idx + 21] + (buffer[idx + 20] << 8);
                     for (int i = 0; i < numberOfPaletteEntries; i++)
                     {
-                       
+                        PaletteUpdates.Add(new Palette
+                        {
+                            PaletteEntryId = buffer[idx++],
+                            Y = buffer[idx++],
+                            Cr = buffer[idx++],
+                            Cb = buffer[idx++],
+                            T = buffer[idx++]
+                        });
                     }
                 }
 
@@ -841,7 +969,15 @@ namespace seconv.libse.SubtitleFormats
                 stream.WritePts(EndPts);
                 if (PaletteUpdate)
                 {
-                    
+                    stream.WriteWord(PaletteUpdates.Count);
+                    foreach (var palette in PaletteUpdates)
+                    {
+                        stream.WriteByte((byte)palette.PaletteEntryId);
+                        stream.WriteByte((byte)palette.Y);
+                        stream.WriteByte((byte)palette.Cb);
+                        stream.WriteByte((byte)palette.Cr);
+                        stream.WriteByte((byte)palette.T);
+                    }
                 }
                 else
                 {
@@ -966,7 +1102,7 @@ namespace seconv.libse.SubtitleFormats
                 int size = (buffer[4] << 8) + buffer[5] + 6;
                 position += size;
 
-                if (bytesRead > 10)
+                if (bytesRead > 10 && IsPrivateStream2(buffer, 0))
                 {
                     if (buffer[6] == SegmentTypeDialogPresentation)
                     {
@@ -980,6 +1116,15 @@ namespace seconv.libse.SubtitleFormats
                     }
                 }
             }
+        }
+
+        public static bool IsPrivateStream2(byte[] buffer, int index)
+        {
+            return buffer.Length >= index + 4 &&
+                   buffer[index + 0] == 0 &&
+                   buffer[index + 1] == 0 &&
+                   buffer[index + 2] == 1 &&
+                   buffer[index + 3] == 0xbf; // 0xbf == 191 - MPEG-2 Private stream 2
         }
 
         private void LoadSubtitleFromM2Ts(Subtitle subtitle, Stream ms)
@@ -1044,22 +1189,22 @@ namespace seconv.libse.SubtitleFormats
             //TODO: merge ts packets
 
             PresentationSegments = new List<DialogPresentationSegment>();
-            foreach (var item in subtitlePackets)
-            {
-                if (item.Payload != null && item.Payload.Length > 10)
-                {
-                    if (item.Payload[6] == SegmentTypeDialogPresentation)
-                    {
-                        var dps = new DialogPresentationSegment(item.Payload, 0);
-                        PresentationSegments.Add(dps);
-                        subtitle.Paragraphs.Add(new Paragraph(dps.Text.Trim(), dps.StartPtsMilliseconds, dps.EndPtsMilliseconds));
-                    }
-                    else if (item.Payload[6] == SegmentTypeDialogStyle)
-                    {
-                        StyleSegment = new DialogStyleSegment(item.Payload);
-                    }
-                }
-            }
+            //foreach (var item in subtitlePackets)
+            //{
+            //    if (item.Payload != null && item.Payload.Length > 10 && VobSubParser.IsPrivateStream2(item.Payload, 0))
+            //    {
+            //        if (item.Payload[6] == SegmentTypeDialogPresentation)
+            //        {
+            //            var dps = new DialogPresentationSegment(item.Payload, 0);
+            //            PresentationSegments.Add(dps);
+            //            subtitle.Paragraphs.Add(new Paragraph(dps.Text.Trim(), dps.StartPtsMilliseconds, dps.EndPtsMilliseconds));
+            //        }
+            //        else if (item.Payload[6] == SegmentTypeDialogStyle)
+            //        {
+            //            StyleSegment = new DialogStyleSegment(item.Payload);
+            //        }
+            //    }
+            //}
 
             subtitle.Renumber();
         }

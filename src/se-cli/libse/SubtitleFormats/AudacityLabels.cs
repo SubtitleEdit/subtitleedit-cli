@@ -1,5 +1,4 @@
 ﻿using System.Globalization;
-using seconv.libse.Common;
 
 namespace seconv.libse.SubtitleFormats
 {

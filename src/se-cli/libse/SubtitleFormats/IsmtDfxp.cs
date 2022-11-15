@@ -1,6 +1,4 @@
 ﻿using System.Text;
-using seconv.libse.Common;
-using seconv.libse.ContainerFormats.Mp4;
 
 namespace seconv.libse.SubtitleFormats
 {
@@ -77,7 +75,7 @@ namespace seconv.libse.SubtitleFormats
                     // merge lines with same time codes
                     sub = Forms.MergeLinesWithSameTimeCodes.Merge(sub, new List<int>(), out _, true, false, 1000, "en", new List<int>(), new Dictionary<int, bool>(), new Subtitle());
 
-                    // adjust to last exisiting sub
+                    // adjust to last existing sub
                     var lastSub = subtitle.GetParagraphOrDefault(subtitle.Paragraphs.Count - 1);
                     if (lastSub != null && sub.Paragraphs.Count > 0 && lastSub.StartTime.TotalMilliseconds > sub.Paragraphs[0].StartTime.TotalMilliseconds)
                     {

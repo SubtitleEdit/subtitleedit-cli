@@ -2,7 +2,6 @@
 using System.Text;
 using System.Xml;
 using System.Xml.Schema;
-using seconv.libse.Common;
 
 namespace seconv.libse.SubtitleFormats
 {
@@ -77,15 +76,14 @@ namespace seconv.libse.SubtitleFormats
 
             if (!string.IsNullOrEmpty(ss.CurrentDCinemaEditRate))
             {
-                string[] temp = ss.CurrentDCinemaEditRate.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                double d1, d2;
-                if (temp.Length == 2 && double.TryParse(temp[0], out d1) && double.TryParse(temp[1], out d2))
+                var temp = ss.CurrentDCinemaEditRate.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                if (temp.Length == 2 && double.TryParse(temp[0], out var d1) && double.TryParse(temp[1], out var d2))
                 {
                     _frameRate = d1 / d2;
                 }
             }
 
-            string xmlStructure =
+            var xmlStructure =
                 "<dcst:SubtitleReel xmlns:dcst=\"http://www.smpte-ra.org/schemas/428-7/2014/DCST\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">" + Environment.NewLine +
                 "  <dcst:Id>" + DCinemaSmpte2007.GenerateId() + "</dcst:Id>" + Environment.NewLine +
                 "  <dcst:ContentTitleText></dcst:ContentTitleText> " + Environment.NewLine +
@@ -232,10 +230,11 @@ namespace seconv.libse.SubtitleFormats
                         vPos = (lines.Count * vPosFactor) - vPosFactor + Configuration.Settings.SubtitleSettings.DCinemaBottomMargin; // Bottom margin is normally 8
                     }
 
-                    bool isItalic = false;
-                    int fontNo = 0;
-                    Stack<string> fontColors = new Stack<string>();
-                    foreach (string line in lines)
+                    var isItalic = false;
+                    var isBold = false;
+                    var fontNo = 0;
+                    var fontColors = new Stack<string>();
+                    foreach (var line in lines)
                     {
                         XmlNode textNode = xml.CreateElement("dcst:Text", "dcst");
 
@@ -296,6 +295,17 @@ namespace seconv.libse.SubtitleFormats
                                 isItalic = true;
                                 i += 2;
                             }
+                            else if (!isBold && line.Substring(i).StartsWith("<b>", StringComparison.Ordinal))
+                            {
+                                if (txt.Length > 0)
+                                {
+                                    nodeTemp.InnerText = txt.ToString();
+                                    html.Append(nodeTemp.InnerXml);
+                                    txt.Clear();
+                                }
+                                isBold = true;
+                                i += 2;
+                            }
                             else if (isItalic && line.Substring(i).StartsWith("</i>", StringComparison.Ordinal))
                             {
                                 if (txt.Length > 0)
@@ -320,6 +330,32 @@ namespace seconv.libse.SubtitleFormats
                                     txt.Clear();
                                 }
                                 isItalic = false;
+                                i += 3;
+                            }
+                            else if (isBold && line.Substring(i).StartsWith("</b>", StringComparison.Ordinal))
+                            {
+                                if (txt.Length > 0)
+                                {
+                                    XmlNode fontNode = xml.CreateElement("dcst:Font", "dcst");
+
+                                    XmlAttribute bold = xml.CreateAttribute("Weight");
+                                    bold.InnerText = "bold";
+                                    fontNode.Attributes.Append(bold);
+
+                                    if (line.Length > i + 5 && line.Substring(i + 4).StartsWith("</font>", StringComparison.Ordinal))
+                                    {
+                                        XmlAttribute fontColor = xml.CreateAttribute("Color");
+                                        fontColor.InnerText = fontColors.Pop();
+                                        fontNode.Attributes.Append(fontColor);
+                                        fontNo--;
+                                        i += 7;
+                                    }
+
+                                    fontNode.InnerText = HtmlUtil.RemoveHtmlTags(txt.ToString());
+                                    html.Append(fontNode.OuterXml);
+                                    txt.Clear();
+                                }
+                                isBold = false;
                                 i += 3;
                             }
                             else if (line.Substring(i).StartsWith("<font color=", StringComparison.Ordinal) && line.Substring(i + 3).Contains('>'))
@@ -355,6 +391,15 @@ namespace seconv.libse.SubtitleFormats
                                         i += 4;
                                     }
 
+                                    if (line.Length > i + 9 && line.Substring(i + 7).StartsWith("</b>", StringComparison.Ordinal))
+                                    {
+                                        XmlAttribute bold = xml.CreateAttribute("bold");
+                                        bold.InnerText = "bold";
+                                        fontNode.Attributes.Append(bold);
+                                        isBold = false;
+                                        i += 4;
+                                    }
+
                                     fontNode.InnerText = HtmlUtil.RemoveHtmlTags(txt.ToString());
                                     html.Append(fontNode.OuterXml);
                                     txt.Clear();
@@ -384,6 +429,13 @@ namespace seconv.libse.SubtitleFormats
                                     XmlAttribute italic = xml.CreateAttribute("Italic");
                                     italic.InnerText = "yes";
                                     fontNode.Attributes.Append(italic);
+                                }
+
+                                if (isBold)
+                                {
+                                    XmlAttribute bold = xml.CreateAttribute("Weight");
+                                    bold.InnerText = "bold";
+                                    fontNode.Attributes.Append(bold);
                                 }
 
                                 fontNode.InnerText = HtmlUtil.RemoveHtmlTags(txt.ToString());
@@ -419,6 +471,20 @@ namespace seconv.libse.SubtitleFormats
                                 XmlAttribute italic = xml.CreateAttribute("Italic");
                                 italic.InnerText = "yes";
                                 fontNode.Attributes.Append(italic);
+
+                                fontNode.InnerText = HtmlUtil.RemoveHtmlTags(txt.ToString());
+                                html.Append(fontNode.OuterXml);
+                            }
+                        }
+                        else if (isBold)
+                        {
+                            if (txt.Length > 0)
+                            {
+                                XmlNode fontNode = xml.CreateElement("dcst:Font", "dcst");
+
+                                XmlAttribute bold = xml.CreateAttribute("Weight");
+                                bold.InnerText = "bold";
+                                fontNode.Attributes.Append(bold);
 
                                 fontNode.InnerText = HtmlUtil.RemoveHtmlTags(txt.ToString());
                                 html.Append(fontNode.OuterXml);
@@ -505,8 +571,8 @@ namespace seconv.libse.SubtitleFormats
         /// </summary>
         internal static string FixDcsTextSameLine(string xml)
         {
-            int index = xml.IndexOf("<dcst:Text", StringComparison.Ordinal);
-            int endIndex = 1;
+            var index = xml.IndexOf("<dcst:Text", StringComparison.Ordinal);
+            var endIndex = 1;
             while (index > 0 && endIndex > 0)
             {
                 endIndex = xml.IndexOf("</dcst:Text>", index, StringComparison.Ordinal);
@@ -614,7 +680,7 @@ namespace seconv.libse.SubtitleFormats
                 }
 
                 node = xml.DocumentElement.SelectSingleNode("SubtitleList/Font");
-                if (node != null)
+                if (node?.Attributes != null)
                 {
                     if (node.Attributes["ID"] != null)
                     {
@@ -776,18 +842,34 @@ namespace seconv.libse.SubtitleFormats
                                     {
                                         if (innerInnerNode.Attributes["Color"] != null)
                                         {
-                                            pText.Append("<i><font color=\"" + DCinemaInterop.GetColorStringFromDCinema(innerInnerNode.Attributes["Color"].Value) + "\">" + innerInnerNode.InnerText + "</font><i>");
+                                            pText.Append("<i><font color=\"" + DCinemaInterop.GetColorStringFromDCinema(innerInnerNode.Attributes["Color"].Value) + "\">" + innerInnerNode.InnerText + "</font></i>");
                                         }
                                         else
                                         {
                                             pText.Append("<i>" + innerInnerNode.InnerText + "</i>");
                                         }
                                     }
+                                    else if (innerInnerNode.Name == "Font" && innerInnerNode.Attributes["Weight"] != null &&
+                                        innerInnerNode.Attributes["Weight"].InnerText.Equals("bold", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        if (innerInnerNode.Attributes["Color"] != null)
+                                        {
+                                            pText.Append("<b><font color=\"" + DCinemaInterop.GetColorStringFromDCinema(innerInnerNode.Attributes["Color"].Value) + "\">" + innerInnerNode.InnerText + "</font></b>");
+                                        }
+                                        else
+                                        {
+                                            pText.Append("<b>" + innerInnerNode.InnerText + "</b>");
+                                        }
+                                    }
                                     else if (innerInnerNode.Name == "Font" && innerInnerNode.Attributes["Color"] != null)
                                     {
                                         if (innerInnerNode.Attributes["Italic"] != null && innerInnerNode.Attributes["Italic"].InnerText.Equals("yes", StringComparison.OrdinalIgnoreCase))
                                         {
-                                            pText.Append("<i><font color=\"" + DCinemaInterop.GetColorStringFromDCinema(innerInnerNode.Attributes["Color"].Value) + "\">" + innerInnerNode.InnerText + "</font><i>");
+                                            pText.Append("<i><font color=\"" + DCinemaInterop.GetColorStringFromDCinema(innerInnerNode.Attributes["Color"].Value) + "\">" + innerInnerNode.InnerText + "</font></i>");
+                                        }
+                                        else if (innerInnerNode.Attributes["Weight"] != null && innerInnerNode.Attributes["Weight"].InnerText.Equals("bold", StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            pText.Append("<b><font color=\"" + DCinemaInterop.GetColorStringFromDCinema(innerInnerNode.Attributes["Color"].Value) + "\">" + innerInnerNode.InnerText + "</font></b>");
                                         }
                                         else
                                         {
@@ -837,6 +919,18 @@ namespace seconv.libse.SubtitleFormats
                             text = "<i>" + text + "</i>";
                         }
                     }
+                    else if (node.ParentNode.Name == "Font" && node.ParentNode.Attributes["Weight"] != null && node.ParentNode.Attributes["Weight"].InnerText.Equals("bold", StringComparison.OrdinalIgnoreCase) &&
+                        !pText.ToString().Contains("<b>"))
+                    {
+                        if (text.StartsWith("{\\an", StringComparison.Ordinal) && text.Length > 6)
+                        {
+                            text = text.Insert(6, "<b>") + "</b>";
+                        }
+                        else
+                        {
+                            text = "<b>" + text + "</b>";
+                        }
+                    }
 
                     subtitle.Paragraphs.Add(new Paragraph(GetTimeCode(start), GetTimeCode(end), text));
                 }
@@ -857,9 +951,9 @@ namespace seconv.libse.SubtitleFormats
 
         private TimeCode GetTimeCode(string s)
         {
-            var parts = s.Split(new[] { ':', '.', ',' });
+            var parts = s.Split(':', '.', ',');
 
-            int milliseconds = (int)Math.Round(int.Parse(parts[3]) * (TimeCode.BaseUnit / _frameRate));
+            var milliseconds = (int)Math.Round(int.Parse(parts[3]) * (TimeCode.BaseUnit / _frameRate));
             if (milliseconds > 999)
             {
                 milliseconds = 999;
@@ -870,7 +964,7 @@ namespace seconv.libse.SubtitleFormats
 
         public static int MsToFramesMaxFrameRate(double milliseconds, double frameRate)
         {
-            int frames = (int)Math.Round(milliseconds / (TimeCode.BaseUnit / frameRate));
+            var frames = (int)Math.Round(milliseconds / (TimeCode.BaseUnit / frameRate));
             if (frames >= Configuration.Settings.General.CurrentFrameRate)
             {
                 frames = (int)(frameRate - 0.01);
@@ -883,6 +977,5 @@ namespace seconv.libse.SubtitleFormats
         {
             return $"{time.Hours:00}:{time.Minutes:00}:{time.Seconds:00}:{MsToFramesMaxFrameRate(time.Milliseconds, _frameRate):00}";
         }
-
     }
 }

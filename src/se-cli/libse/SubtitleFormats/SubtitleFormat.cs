@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using System.Xml;
-using seconv.libse.Common;
 
 namespace seconv.libse.SubtitleFormats
 {
@@ -145,7 +144,9 @@ namespace seconv.libse.SubtitleFormats
                     new KanopyHtml(),
                     new LambdaCap(),
                     new Lrc(),
+                    new LrcNoEndTime(),
                     new MacSub(),
+                    new MagicVideoTitler(),
                     new MediaTransData(),
                     new MicroDvd(),
                     new MidwayInscriberCGX(),
@@ -178,6 +179,7 @@ namespace seconv.libse.SubtitleFormats
                     new Scenarist(),
                     new ScenaristClosedCaptions(),
                     new ScenaristClosedCaptionsDropFrame(),
+                    new SmartTitler(),
                     new SmilTimesheetData(),
                     new SmpteTt2052(),
                     new SoftNiSub(),
@@ -201,7 +203,6 @@ namespace seconv.libse.SubtitleFormats
                     new SwiftText(),
                     new SwiftTextLineNumber(),
                     new SwiftTextLineNOAndDur(),
-                    new Tek(),
                     new TimeXml(),
                     new TimeXml2(),
                     new TimedText10(),
@@ -344,37 +345,6 @@ namespace seconv.libse.SubtitleFormats
                     new UnknownSubtitle105(),
                     new UnknownSubtitle106(),
                 };
-
-                string path = Configuration.PluginsDirectory;
-                if (Directory.Exists(path))
-                {
-                    foreach (string pluginFileName in Directory.EnumerateFiles(path, "*.DLL"))
-                    {
-                        try
-                        {
-                            var assembly = System.Reflection.Assembly.Load(FileUtil.ReadAllBytesShared(pluginFileName));
-                            foreach (var exportedType in assembly.GetExportedTypes())
-                            {
-                                try
-                                {
-                                    object pluginObject = Activator.CreateInstance(exportedType);
-                                    if (pluginObject is SubtitleFormat po)
-                                    {
-                                        _allSubtitleFormats.Insert(1, po);
-                                    }
-                                }
-                                catch
-                                {
-                                    // ignored
-                                }
-                            }
-                        }
-                        catch
-                        {
-                            // ignored
-                        }
-                    }
-                }
 
                 _subtitleFormatsWithDefaultOrder = new List<SubtitleFormat>(_allSubtitleFormats);
                 _allSubtitleFormats = GetOrderedFormatsList(_subtitleFormatsWithDefaultOrder);

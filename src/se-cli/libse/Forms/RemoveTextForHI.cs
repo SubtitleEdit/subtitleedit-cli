@@ -1167,7 +1167,7 @@ namespace seconv.libse.Forms
                 // remove/fix dashes
                 if (subtitle != null && index >= 0)
                 {
-                    text = Helper.FixHyphensRemoveForSingleLine(subtitle, text, index);
+                    text = FixCommonErrors.Helper.FixHyphensRemoveForSingleLine(subtitle, text, index);
                 }
                 var dialogHelper = new DialogSplitMerge { DialogStyle = Configuration.Settings.General.DialogStyle, ContinuationStyle = Configuration.Settings.General.ContinuationStyle };
                 if (subtitle != null && index >= 0)

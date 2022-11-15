@@ -2,7 +2,6 @@
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
-using seconv.libse.Common;
 
 namespace seconv.libse.SubtitleFormats
 {
@@ -68,9 +67,9 @@ namespace seconv.libse.SubtitleFormats
 
             foreach (var p in subtitle.Paragraphs)
             {
-                string start = string.Format(timeCodeFormatHours, p.StartTime.Hours, p.StartTime.Minutes, p.StartTime.Seconds, p.StartTime.Milliseconds);
-                string end = string.Format(timeCodeFormatHours, p.EndTime.Hours, p.EndTime.Minutes, p.EndTime.Seconds, p.EndTime.Milliseconds);
-                string positionInfo = GetPositionInfoFromAssTag(p);
+                var start = string.Format(timeCodeFormatHours, p.StartTime.Hours, p.StartTime.Minutes, p.StartTime.Seconds, p.StartTime.Milliseconds);
+                var end = string.Format(timeCodeFormatHours, p.EndTime.Hours, p.EndTime.Minutes, p.EndTime.Seconds, p.EndTime.Milliseconds);
+                var positionInfo = GetPositionInfoFromAssTag(p);
 
                 var style = string.Empty;
                 if (subtitle.Header != null && subtitle.Header.StartsWith("WEBVTT", StringComparison.Ordinal))
@@ -88,6 +87,7 @@ namespace seconv.libse.SubtitleFormats
 
                 sb.AppendLine(string.Format(paragraphWriteFormat, start, end, positionInfo, FormatText(p), style, Environment.NewLine));
             }
+
             return sb.ToString().Trim();
         }
 
@@ -136,7 +136,7 @@ namespace seconv.libse.SubtitleFormats
 
         internal static string FormatText(Paragraph p)
         {
-            string text = Utilities.RemoveSsaTags(p.Text);
+            var text = Utilities.RemoveSsaTags(p.Text);
             while (text.Contains(Environment.NewLine + Environment.NewLine))
             {
                 text = text.Replace(Environment.NewLine + Environment.NewLine, Environment.NewLine);
@@ -151,9 +151,9 @@ namespace seconv.libse.SubtitleFormats
         {
             _errorCount = 0;
             Paragraph p = null;
-            string positionInfo = string.Empty;
-            bool hadEmptyLine = false;
-            int numbers = 0;
+            var positionInfo = string.Empty;
+            var hadEmptyLine = false;
+            var numbers = 0;
             double addSeconds = 0;
             var noteOn = false;
             var styleOn = false;
@@ -226,10 +226,20 @@ namespace seconv.libse.SubtitleFormats
                     continue;
                 }
 
-                if (index > 1 && (line.StartsWith("X-TIMESTAMP-MAP=", StringComparison.OrdinalIgnoreCase) || line == "WEBVTT"))
+                if (index > 1)
                 {
-                    // badly formatted web vtt file
-                    continue;
+                    if (line.StartsWith("X-TIMESTAMP-MAP=", StringComparison.OrdinalIgnoreCase) &&
+                        line.IndexOf("MPEGTS:", StringComparison.OrdinalIgnoreCase) > 0)
+                    {
+                        addSeconds = GetXTimeStampSeconds(line);
+                        continue;
+                    }
+
+                    if (line == "WEBVTT")
+                    {
+                        // badly formatted web vtt file
+                        continue;
+                    }
                 }
 
                 noteOn = false;
@@ -237,7 +247,7 @@ namespace seconv.libse.SubtitleFormats
                 regionOn = false;
 
                 var s = line;
-                bool isTimeCode = line.Contains("-->");
+                var isTimeCode = line.Contains("-->");
                 if (isTimeCode && RegexTimeCodesMiddle.IsMatch(s))
                 {
                     s = "00:" + s; // start is without hours, end is with hours
@@ -253,7 +263,7 @@ namespace seconv.libse.SubtitleFormats
                     numbers++;
                 }
                 else if (index == 1 && s.StartsWith("X-TIMESTAMP-MAP=", StringComparison.OrdinalIgnoreCase) &&
-                    s.IndexOf("MPEGTS:", StringComparison.OrdinalIgnoreCase) > 0)
+                         s.IndexOf("MPEGTS:", StringComparison.OrdinalIgnoreCase) > 0)
                 {
                     addSeconds = GetXTimeStampSeconds(s);
                 }
@@ -273,6 +283,10 @@ namespace seconv.libse.SubtitleFormats
                             StartTime = GetTimeCodeFromString(parts[0]),
                             EndTime = GetTimeCodeFromString(parts[1])
                         };
+
+                        p.StartTime.TotalMilliseconds += addSeconds * 1000;
+                        p.EndTime.TotalMilliseconds += addSeconds * 1000;
+
                         positionInfo = GetPositionInfo(s);
                         p.Region = GetRegion(s);
                     }
@@ -295,7 +309,7 @@ namespace seconv.libse.SubtitleFormats
                 }
                 else if (p != null)
                 {
-                    string text = positionInfo + line.Trim();
+                    var text = positionInfo + line.Trim();
                     if (string.IsNullOrEmpty(text))
                     {
                         hadEmptyLine = true;
@@ -333,9 +347,7 @@ namespace seconv.libse.SubtitleFormats
             {
                 paragraph.Text = ColorWebVttToHtml(paragraph.Text);
                 paragraph.Text = EscapeDecodeText(paragraph.Text);
-                paragraph.Text = RemoveWeirdReatingHeader(paragraph.Text);
-                paragraph.StartTime.TotalMilliseconds += addSeconds * 1000;
-                paragraph.EndTime.TotalMilliseconds += addSeconds * 1000;
+                paragraph.Text = RemoveWeirdRepeatingHeader(paragraph.Text);
             }
 
             var merged = MergeLinesSameTextUtils.MergeLinesWithSameTextInSubtitle(subtitle, false, 1);
@@ -351,7 +363,7 @@ namespace seconv.libse.SubtitleFormats
             }
         }
 
-        private string RemoveWeirdReatingHeader(string input)
+        private static string RemoveWeirdRepeatingHeader(string input)
         {
             var text = input;
             text = text.Replace(" " + Environment.NewLine, Environment.NewLine);
@@ -360,18 +372,18 @@ namespace seconv.libse.SubtitleFormats
             {
                 if (text.TrimEnd().EndsWith('}') && text.Contains("STYLE"))
                 {
-                    text = text.Remove(text.IndexOf(Environment.NewLine + "WEBVTT")).Trim();
+                    text = text.Remove(text.IndexOf(Environment.NewLine + "WEBVTT", StringComparison.Ordinal)).Trim();
                 }
             }
             else if (text.TrimEnd().EndsWith(Environment.NewLine + "WEBVTT", StringComparison.Ordinal))
             {
-                text = text.Remove(text.LastIndexOf(Environment.NewLine + "WEBVTT")).Trim();
+                text = text.Remove(text.LastIndexOf(Environment.NewLine + "WEBVTT", StringComparison.Ordinal)).Trim();
             }
             else if (text.Contains(Environment.NewLine + "STYLE" + Environment.NewLine))
             {
                 if (text.TrimEnd().EndsWith("}"))
                 {
-                    text = text.Remove(text.IndexOf(Environment.NewLine + "STYLE" + Environment.NewLine)).Trim();
+                    text = text.Remove(text.IndexOf(Environment.NewLine + "STYLE" + Environment.NewLine, StringComparison.Ordinal)).Trim();
                 }
             }
 
@@ -386,11 +398,10 @@ namespace seconv.libse.SubtitleFormats
             }
 
             var s = input.RemoveChar(' ');
-
             var subtractSeconds = 0d;
             var startIndex = s.IndexOf("LOCAL:", StringComparison.OrdinalIgnoreCase);
             var localSb = new StringBuilder();
-            for (int i = startIndex + 6; i < s.Length; i++)
+            for (var i = startIndex + 6; i < s.Length; i++)
             {
                 var ch = s[i];
                 if (char.IsNumber(ch) || ch == ':' || ch == '.')
@@ -402,6 +413,7 @@ namespace seconv.libse.SubtitleFormats
                     break;
                 }
             }
+
             var parts = localSb.ToString().Split(':', '.');
             if (parts.Length == 3)
             {
@@ -427,15 +439,12 @@ namespace seconv.libse.SubtitleFormats
                 }
             }
 
-            if (tsSb.Length > 0)
+            if (tsSb.Length > 0 && long.TryParse(tsSb.ToString(), out var number))
             {
-                if (long.TryParse(tsSb.ToString(), out var number))
+                var seconds = (double)number / Configuration.Settings.SubtitleSettings.WebVttTimescale - subtractSeconds;
+                if (seconds > 0 && seconds < 90000) // max 25 hours - or wrong timescale
                 {
-                    var seconds = (double)number / Configuration.Settings.SubtitleSettings.WebVttTimescale - subtractSeconds;
-                    if (seconds > 0 && seconds < 90000) // max 25 hours - or wrong timescale
-                    {
-                        return seconds;
-                    }
+                    return seconds;
                 }
             }
 
@@ -449,23 +458,21 @@ namespace seconv.libse.SubtitleFormats
             var pos = GetTag(s, "position:");
             var line = GetTag(s, "line:");
             var positionInfo = string.Empty;
-            bool hAlignLeft = false;
-            bool hAlignRight = false;
-            bool vAlignTop = false;
-            bool vAlignMiddle = false;
+            var hAlignLeft = false;
+            var hAlignRight = false;
+            var vAlignTop = false;
+            var vAlignMiddle = false;
+            double number;
 
-            if (!string.IsNullOrEmpty(pos) && pos.EndsWith('%'))
+            if (!string.IsNullOrEmpty(pos) && pos.EndsWith('%') && double.TryParse(pos.TrimEnd('%'), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out number))
             {
-                if (double.TryParse(pos.TrimEnd('%'), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var number))
+                if (number < 25)
                 {
-                    if (number < 25)
-                    {
-                        hAlignLeft = true;
-                    }
-                    else if (number > 75)
-                    {
-                        hAlignRight = true;
-                    }
+                    hAlignLeft = true;
+                }
+                else if (number > 75)
+                {
+                    hAlignRight = true;
                 }
             }
 
@@ -474,7 +481,7 @@ namespace seconv.libse.SubtitleFormats
                 line = line.Trim();
                 if (line.EndsWith('%'))
                 {
-                    if (double.TryParse(line.TrimEnd('%'), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var number))
+                    if (double.TryParse(line.TrimEnd('%'), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out number))
                     {
                         if (number < 25)
                         {
@@ -488,7 +495,7 @@ namespace seconv.libse.SubtitleFormats
                 }
                 else
                 {
-                    if (double.TryParse(line, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var number))
+                    if (double.TryParse(line, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out number))
                     {
                         if (number >= 0 && number <= 7)
                         {
@@ -508,10 +515,12 @@ namespace seconv.libse.SubtitleFormats
                 {
                     return "{\\an7}";
                 }
+
                 if (vAlignMiddle)
                 {
                     return "{\\an4}";
                 }
+
                 return "{\\an1}";
             }
 
@@ -521,10 +530,12 @@ namespace seconv.libse.SubtitleFormats
                 {
                     return "{\\an9}";
                 }
+
                 if (vAlignMiddle)
                 {
                     return "{\\an6}";
                 }
+
                 return "{\\an3}";
             }
 
@@ -558,13 +569,16 @@ namespace seconv.libse.SubtitleFormats
                 {
                     v = v.Remove(end + 1);
                 }
+                
                 end = v.IndexOf(' ');
                 if (end >= 0)
                 {
                     v = v.Remove(end);
                 }
+
                 return v;
             }
+
             return null;
         }
 
@@ -575,7 +589,7 @@ namespace seconv.libse.SubtitleFormats
             var regexRemoveTimeCodes = new Regex(@"\<\d+:\d+:\d+\.\d+\>", RegexOptions.Compiled); // <00:00:10.049>
             var regexTagsPlusWhiteSpace = new Regex(@"(\{\\an\d\})[\s\r\n]+", RegexOptions.Compiled); // <00:00:10.049>
 
-            foreach (Paragraph p in subtitle.Paragraphs)
+            foreach (var p in subtitle.Paragraphs)
             {
                 if (p.Text.Contains('<') || p.Text.Contains('&'))
                 {
@@ -633,7 +647,7 @@ namespace seconv.libse.SubtitleFormats
             }
         }
 
-        private string FindBestColorTagOrDefault(string tag)
+        private static string FindBestColorTagOrDefault(string tag)
         {
             var tags = tag.Split('.').ToList();
             tags.Reverse();
@@ -650,6 +664,7 @@ namespace seconv.libse.SubtitleFormats
                     return "#" + l.Remove(0, 5);
                 }
             }
+
             return null;
         }
 
@@ -748,7 +763,7 @@ namespace seconv.libse.SubtitleFormats
             try
             {
                 var c = ColorTranslator.FromHtml("#" + tag.Trim('#'));
-                int maxDiff = 25;
+                const int maxDiff = 25;
                 foreach (var kvp in DefaultColorClasses)
                 {
                     if (Math.Abs(kvp.Value.R - c.R) <= maxDiff &&
@@ -763,6 +778,7 @@ namespace seconv.libse.SubtitleFormats
             {
                 return null;
             }
+
             return null;
         }
 
@@ -771,16 +787,16 @@ namespace seconv.libse.SubtitleFormats
             var list = new List<string>();
             if (subtitle?.Paragraphs != null)
             {
-                foreach (Paragraph p in subtitle.Paragraphs)
+                foreach (var p in subtitle.Paragraphs)
                 {
-                    string s = p.Text;
+                    var s = p.Text;
                     var startIndex = s.IndexOf("<v ", StringComparison.Ordinal);
                     while (startIndex >= 0)
                     {
-                        int endIndex = s.IndexOf('>', startIndex);
+                        var endIndex = s.IndexOf('>', startIndex);
                         if (endIndex > startIndex)
                         {
-                            string voice = s.Substring(startIndex + 2, endIndex - startIndex - 2).Trim();
+                            var voice = s.Substring(startIndex + 2, endIndex - startIndex - 2).Trim();
                             if (!list.Contains(voice))
                             {
                                 list.Add(voice);
@@ -804,10 +820,10 @@ namespace seconv.libse.SubtitleFormats
         public static string RemoveTag(string tag, string text)
         {
             var res = text;
-            int indexOfTag = res.IndexOf("<" + tag + " ", StringComparison.Ordinal);
+            var indexOfTag = res.IndexOf("<" + tag + " ", StringComparison.Ordinal);
             if (indexOfTag >= 0)
             {
-                int indexOfEnd = res.IndexOf('>', indexOfTag);
+                var indexOfEnd = res.IndexOf('>', indexOfTag);
                 if (indexOfEnd > 0)
                 {
                     res = res.Remove(indexOfTag, indexOfEnd - indexOfTag + 1);
@@ -825,7 +841,7 @@ namespace seconv.libse.SubtitleFormats
             }
             var sb = new StringBuilder(input.Length);
             var max = input.Length;
-            int i = 0;
+            var i = 0;
             var tagOn = false;
             while (i < max)
             {
@@ -906,6 +922,7 @@ namespace seconv.libse.SubtitleFormats
                     i++;
                 }
             }
+
             return sb.ToString();
         }
 

@@ -2,7 +2,7 @@
 
 .NET 6 console subtitle converter for Windows, Linux, and Mac.
 
-Code is based on SE 3.6.7
+Code is based on SE 3.6.9
 Imaged based formats/OCR was removed.
 To update, the `SubtitleFormats` should be copied from latest SE.
 

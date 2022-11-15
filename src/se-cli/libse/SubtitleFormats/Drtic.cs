@@ -1,6 +1,4 @@
-﻿using seconv.libse.Common;
-
-namespace seconv.libse.SubtitleFormats
+﻿namespace seconv.libse.SubtitleFormats
 {
     public class Drtic : MicroDvd
     {

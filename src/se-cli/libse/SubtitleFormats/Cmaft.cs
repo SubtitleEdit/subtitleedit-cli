@@ -1,7 +1,4 @@
-﻿using seconv.libse.Common;
-using seconv.libse.ContainerFormats.Mp4;
-
-namespace seconv.libse.SubtitleFormats
+﻿namespace seconv.libse.SubtitleFormats
 {
     /// <summary>
     /// CMFT - "Common Media application Format Text"

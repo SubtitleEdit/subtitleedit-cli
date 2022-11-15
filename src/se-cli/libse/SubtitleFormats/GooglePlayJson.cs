@@ -1,7 +1,5 @@
 ﻿using System.Globalization;
 using System.Text;
-using seconv.libse.Common;
-using seconv.libse.Forms.FixCommonErrors;
 
 namespace seconv.libse.SubtitleFormats
 {

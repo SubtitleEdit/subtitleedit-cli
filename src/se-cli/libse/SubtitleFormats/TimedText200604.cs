@@ -1,7 +1,5 @@
 ﻿using System.Text;
 using System.Xml;
-using seconv.libse.Common;
-using seconv.libse.Forms.FixCommonErrors;
 
 namespace seconv.libse.SubtitleFormats
 {

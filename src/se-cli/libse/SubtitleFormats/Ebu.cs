@@ -1,8 +1,6 @@
 ﻿using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
-using seconv.libse.Common;
-using seconv.libse.Interfaces;
 
 namespace seconv.libse.SubtitleFormats
 {

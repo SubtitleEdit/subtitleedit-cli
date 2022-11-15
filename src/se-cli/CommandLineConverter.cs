@@ -169,7 +169,7 @@ namespace seconv
                 var targetFormat = arguments[2].Trim().RemoveChar(' ').ToLowerInvariant();
 
                 // name shortcuts
-                if (targetFormat == "ass")
+                if (targetFormat == "ass" || targetFormat == "assa")
                 {
                     targetFormat = AdvancedSubStationAlpha.NameOfFormat.RemoveChar(' ').ToLowerInvariant();
                 }

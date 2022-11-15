@@ -2,7 +2,6 @@
 using System.Globalization;
 using System.Text;
 using System.Xml;
-using seconv.libse.Common;
 
 namespace seconv.libse.SubtitleFormats
 {
