@@ -1113,6 +1113,20 @@ namespace seconv
                         _stdOutWriter?.WriteLine(" done.");
                     }
                 }
+
+                if (!targetFormatFound)
+                    {
+                        var pacUnicode = new PacUnicode();
+                        if (pacUnicode.Name.RemoveChar(' ','(',')').Equals(targetFormat.RemoveChar(' ','(',')'), StringComparison.OrdinalIgnoreCase) || targetFormat.Equals(".fpc", StringComparison.OrdinalIgnoreCase) || targetFormat.Equals("fpc", StringComparison.OrdinalIgnoreCase))
+                        {
+                            targetFormatFound = true;
+                            outputFileName = FormatOutputFileNameForBatchConvert(fileName, pacUnicode.Extension, outputFolder, overwrite, targetFileName);
+                            _stdOutWriter?.Write($"{count}: {Path.GetFileName(fileName)} -> {outputFileName}...");
+                            pacUnicode.Save(outputFileName, sub);
+                            _stdOutWriter?.WriteLine(" done.");
+                        }
+                    }
+
                 if (!targetFormatFound)
                 {
                     var cavena890 = new Cavena890();
