@@ -579,7 +579,7 @@ namespace seconv
                             }
                         }
 
-                        if (!done && fileInfo.Length < 10 * 1024 * 1024) // max 10 mb
+                        if (!done && IsFileLengthOkForTextSubtitle(fileName, fileInfo))
                         {
                             format = sub.LoadSubtitle(fileName, out _, null, true, frameRate);
 
@@ -628,7 +628,7 @@ namespace seconv
 
                         if (!done && format == null)
                         {
-                            if (fileInfo.Length < 1024 * 1024) // max 1 mb
+                            if (IsFileLengthOkForTextSubtitle(fileName, fileInfo))
                             {
                                 _stdOutWriter.WriteLine($"{fileName}: {targetFormat} - input file format unknown!");
                             }
@@ -672,6 +672,16 @@ namespace seconv
             }
 
             return (count == converted && errors == 0) ? 0 : 1;
+        }
+
+        private static bool IsFileLengthOkForTextSubtitle(string fileName, FileInfo fileInfo)
+        {
+            if (fileName.EndsWith(".ass", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            return fileInfo.Length < 33 * 1024 * 1024; // max 33 mb
         }
 
         /// <summary>
