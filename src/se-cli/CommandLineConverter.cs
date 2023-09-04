@@ -139,7 +139,7 @@ namespace seconv
                 _stdOutWriter.WriteLine("        /" + BatchAction.ReverseRtlStartEnd);
                 _stdOutWriter.WriteLine("        /" + BatchAction.RemoveFormatting);
                 _stdOutWriter.WriteLine("        /" + BatchAction.RemoveTextForHI);
-                _stdOutWriter.WriteLine("        /" + BatchAction.RedoCasing);
+                //_stdOutWriter.WriteLine("        /" + BatchAction.RedoCasing);
                 _stdOutWriter.WriteLine("        /" + BatchAction.BalanceLines);
                 _stdOutWriter.WriteLine();
                 _stdOutWriter.WriteLine("    Example: SubtitleEdit /convert *.srt sami");
