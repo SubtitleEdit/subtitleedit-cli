@@ -1,5 +1,6 @@
 ﻿using System.IO.Compression;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Schema;
 
@@ -570,26 +571,24 @@ namespace seconv.libse.SubtitleFormats
         /// </summary>
         internal static string FixDcsTextSameLine(string xml)
         {
-            var index = xml.IndexOf("<dcst:Text", StringComparison.Ordinal);
-            var endIndex = 1;
-            while (index > 0 && endIndex > 0)
+            var regex = new Regex("<Text [^<]*>\\s+");
+            var match = regex.Match(xml);
+            while (match.Success)
             {
-                endIndex = xml.IndexOf("</dcst:Text>", index, StringComparison.Ordinal);
-                if (endIndex > 0)
-                {
-                    var part = xml.Substring(index, endIndex - index);
-                    if (part.Contains(Environment.NewLine))
-                    {
-                        part = part.Replace(Environment.NewLine, " ");
-                        while (part.Contains("  "))
-                        {
-                            part = part.Replace("  ", " ");
-                        }
-                        part = part.Replace("> <", "><");
-                    }
-                    xml = xml.Remove(index, endIndex - index).Insert(index, part);
-                    index = xml.IndexOf("<dcst:Text", endIndex, StringComparison.Ordinal);
-                }
+                xml = xml
+                    .Remove(match.Index, match.Value.Length)
+                    .Insert(match.Index, match.Value.Trim());
+                match = regex.Match(xml, match.Index);
+            }
+
+            regex = new Regex("\\s+</Text>");
+            match = regex.Match(xml);
+            while (match.Success)
+            {
+                xml = xml
+                    .Remove(match.Index, match.Value.Length)
+                    .Insert(match.Index, match.Value.Trim());
+                match = regex.Match(xml, match.Index);
             }
 
             return xml;
@@ -694,7 +693,7 @@ namespace seconv.libse.SubtitleFormats
 
                     if (node.Attributes["Color"] != null)
                     {
-                        ss.CurrentDCinemaFontColor = System.Drawing.ColorTranslator.FromHtml("#" + node.Attributes["Color"].InnerText);
+                        ss.CurrentDCinemaFontColor = HtmlUtil.GetColorFromString("#" + node.Attributes["Color"].InnerText);
                     }
 
                     if (node.Attributes["Effect"] != null)
@@ -704,7 +703,7 @@ namespace seconv.libse.SubtitleFormats
 
                     if (node.Attributes["EffectColor"] != null)
                     {
-                        ss.CurrentDCinemaFontEffectColor = System.Drawing.ColorTranslator.FromHtml("#" + node.Attributes["EffectColor"].InnerText);
+                        ss.CurrentDCinemaFontEffectColor = HtmlUtil.GetColorFromString("#" + node.Attributes["EffectColor"].InnerText);
                     }
                 }
             }

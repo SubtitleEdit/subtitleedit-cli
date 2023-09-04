@@ -14,7 +14,7 @@ namespace seconv.libse.SubtitleFormats
         private static readonly Regex RegexTimeCodesMiddle = new Regex(@"^-?\d+:-?\d+\.-?\d+\s*-->\s*-?\d+:-?\d+:-?\d+\.-?\d+", RegexOptions.Compiled);
         private static readonly Regex RegexTimeCodesShort = new Regex(@"^-?\d+:-?\d+\.-?\d+\s*-->\s*-?\d+:-?\d+\.-?\d+", RegexOptions.Compiled);
 
-        private static readonly Dictionary<string, Color> DefaultColorClasses = new Dictionary<string, Color>
+        public static readonly Dictionary<string, Color> DefaultColorClasses = new Dictionary<string, Color>
         {
             {
                 "white", Color.FromArgb(255, 255, 255)

@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Text;
 using System.Xml;
 
@@ -239,13 +238,13 @@ namespace seconv.libse.SubtitleFormats
 
             try
             {
-                var color = ColorTranslator.FromHtml(c);
+                var color = HtmlUtil.GetColorFromString(c);
                 var minDiff = 1000;
                 var minDiffColor = string.Empty;
                 int index = 0;
                 foreach (var kvp in ColorDictionary)
                 {
-                    var cd = ColorTranslator.FromHtml("#" + kvp.Value);
+                    var cd = HtmlUtil.GetColorFromString("#" + kvp.Value);
                     int difference = Math.Abs(Math.Abs(cd.R - color.R) + Math.Abs(cd.G - color.G) + Math.Abs(cd.B - color.B));
                     if (difference < minDiff)
                     {

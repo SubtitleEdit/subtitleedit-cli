@@ -197,9 +197,17 @@ namespace seconv
                 {
                     targetFormat = NetflixTimedText.NameOfFormat.RemoveChar(' ').ToLowerInvariant();
                 }
-                else if (targetFormat == "ebu")
+                else if (targetFormat == "ebu" || targetFormat == "ebustl")
                 {
                     targetFormat = Ebu.NameOfFormat.RemoveChar(' ').ToLowerInvariant();
+                }
+                else if (targetFormat == "pacunicode" || targetFormat == "unipac" || targetFormat == "fpc")
+                {
+                    targetFormat = new PacUnicode().Name.RemoveChar(' ').ToLowerInvariant();
+                }
+                else if (targetFormat == "pac")
+                {
+                    targetFormat = Pac.NameOfFormat.RemoveChar(' ').ToLowerInvariant();
                 }
 
                 var unconsumedArguments = arguments.Skip(3).Select(s => s.Trim()).Where(s => s.Length > 0).ToList();
@@ -1125,17 +1133,17 @@ namespace seconv
                 }
 
                 if (!targetFormatFound)
+                {
+                    var pacUnicode = new PacUnicode();
+                    if (pacUnicode.Name.RemoveChar(' ', '(', ')').Equals(targetFormat.RemoveChar(' ', '(', ')'), StringComparison.OrdinalIgnoreCase) || targetFormat.Equals(".fpc", StringComparison.OrdinalIgnoreCase) || targetFormat.Equals("fpc", StringComparison.OrdinalIgnoreCase))
                     {
-                        var pacUnicode = new PacUnicode();
-                        if (pacUnicode.Name.RemoveChar(' ','(',')').Equals(targetFormat.RemoveChar(' ','(',')'), StringComparison.OrdinalIgnoreCase) || targetFormat.Equals(".fpc", StringComparison.OrdinalIgnoreCase) || targetFormat.Equals("fpc", StringComparison.OrdinalIgnoreCase))
-                        {
-                            targetFormatFound = true;
-                            outputFileName = FormatOutputFileNameForBatchConvert(fileName, pacUnicode.Extension, outputFolder, overwrite, targetFileName);
-                            _stdOutWriter?.Write($"{count}: {Path.GetFileName(fileName)} -> {outputFileName}...");
-                            pacUnicode.Save(outputFileName, sub);
-                            _stdOutWriter?.WriteLine(" done.");
-                        }
+                        targetFormatFound = true;
+                        outputFileName = FormatOutputFileNameForBatchConvert(fileName, pacUnicode.Extension, outputFolder, overwrite, targetFileName);
+                        _stdOutWriter?.Write($"{count}: {Path.GetFileName(fileName)} -> {outputFileName}...");
+                        pacUnicode.Save(outputFileName, sub);
+                        _stdOutWriter?.WriteLine(" done.");
                     }
+                }
 
                 if (!targetFormatFound)
                 {

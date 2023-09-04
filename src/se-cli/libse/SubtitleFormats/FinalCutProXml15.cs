@@ -178,11 +178,11 @@ namespace seconv.libse.SubtitleFormats
                 .Replace("[SEQUENCE_DURATION]", sequenceDuration.ToString(CultureInfo.InvariantCulture)))
                 ;
             XmlNode videoNode = xml.DocumentElement.SelectSingleNode("//project/sequence/spine");
-            int number = 1;
+            var number = 1;
 
             var sbTrimmedTitle = new StringBuilder();
             var sb = new StringBuilder();
-            foreach (Paragraph p in subtitle.Paragraphs)
+            foreach (var p in subtitle.Paragraphs)
             {
                 sbTrimmedTitle.Clear();
                 sb.Clear();
@@ -260,7 +260,7 @@ namespace seconv.libse.SubtitleFormats
                                         s = s.Trim('\'');
                                         try
                                         {
-                                            var fontColor = ColorTranslator.FromHtml(s);
+                                            var fontColor = HtmlUtil.GetColorFromString(s);
                                             var newStyle = new FcpXmlStyle(styles[styles.Count - 1]);
                                             newStyle.FontColor = fontColor;
                                             styles.Add(newStyle);
