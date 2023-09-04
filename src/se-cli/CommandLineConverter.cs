@@ -129,7 +129,7 @@ namespace seconv
                 _stdOutWriter.WriteLine("      The following operations are applied in command line order");
                 _stdOutWriter.WriteLine("      from left to right, and can be specified multiple times.");
                 _stdOutWriter.WriteLine("        /" + BatchAction.ApplyDurationLimits);
-                _stdOutWriter.WriteLine("        /" + BatchAction.FixCommonErrors);
+                //_stdOutWriter.WriteLine("        /" + BatchAction.FixCommonErrors);
                 _stdOutWriter.WriteLine("        /" + BatchAction.RemoveLineBreaks);
                 _stdOutWriter.WriteLine("        /" + BatchAction.MergeSameTimeCodes);
                 _stdOutWriter.WriteLine("        /" + BatchAction.MergeSameTexts);
