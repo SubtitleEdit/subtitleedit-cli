@@ -1918,7 +1918,7 @@ namespace seconv.libse.SubtitleFormats
                 if (text.Substring(i).StartsWith(Environment.NewLine, StringComparison.Ordinal))
                 {
                     buffer[i + extra] = 0xfe;
-                    i++;
+                    i += Environment.NewLine.Length - 1;
                     buffer[i + extra] = alignment;
                     extra++;
                     buffer[i + extra] = 3;
@@ -2002,7 +2002,7 @@ namespace seconv.libse.SubtitleFormats
                 if (text.Substring(i).StartsWith(Environment.NewLine, StringComparison.Ordinal))
                 {
                     buffer[i + extra] = 0xfe;
-                    i++;
+                    i += Environment.NewLine.Length - 1;
                     buffer[i + extra] = alignment;
                     extra++;
                     buffer[i + extra] = 3;
