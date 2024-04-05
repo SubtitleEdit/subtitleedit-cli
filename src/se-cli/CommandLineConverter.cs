@@ -144,7 +144,7 @@ namespace seconv
                 _stdOutWriter.WriteLine();
                 _stdOutWriter.WriteLine("    Example: SubtitleEdit /convert *.srt sami");
                 _stdOutWriter.WriteLine("    Show this usage message: SubtitleEdit /help");
-                _stdOutWriter.WriteLine("    List available formats: SubtitleEdit /help formats");
+                _stdOutWriter.WriteLine("    List available formats: SubtitleEdit /formats");
             }
             _stdOutWriter.WriteLine();
 
@@ -1128,7 +1128,7 @@ namespace seconv
                         targetFormatFound = true;
                         outputFileName = FormatOutputFileNameForBatchConvert(fileName, pac.Extension, outputFolder, overwrite, targetFileName);
                         _stdOutWriter?.Write($"{count}: {Path.GetFileName(fileName)} -> {outputFileName}...");
-                        pac.Save(outputFileName, sub);
+                        pac.Save(outputFileName, sub, new StringBuilder());
                         _stdOutWriter?.WriteLine(" done.");
                     }
                 }
@@ -1141,7 +1141,7 @@ namespace seconv
                         targetFormatFound = true;
                         outputFileName = FormatOutputFileNameForBatchConvert(fileName, pacUnicode.Extension, outputFolder, overwrite, targetFileName);
                         _stdOutWriter?.Write($"{count}: {Path.GetFileName(fileName)} -> {outputFileName}...");
-                        pacUnicode.Save(outputFileName, sub);
+                        pacUnicode.Save(outputFileName, sub, new StringBuilder());
                         _stdOutWriter?.WriteLine(" done.");
                     }
                 }
@@ -1154,7 +1154,14 @@ namespace seconv
                         targetFormatFound = true;
                         outputFileName = FormatOutputFileNameForBatchConvert(fileName, cavena890.Extension, outputFolder, overwrite, targetFileName);
                         _stdOutWriter?.Write($"{count}: {Path.GetFileName(fileName)} -> {outputFileName}...");
-                        cavena890.Save(outputFileName, sub);
+                        var log = new StringBuilder();
+                        cavena890.Save(outputFileName, sub, log);
+                        if (log.Length > 0)
+                        {
+                            _stdOutWriter?.WriteLine();
+                            _stdOutWriter?.WriteLine(log);
+                        }
+
                         _stdOutWriter?.WriteLine(" done.");
                     }
                 }

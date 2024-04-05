@@ -339,15 +339,15 @@ namespace seconv.libse.SubtitleFormats
         private int _languageIdLine1 = LanguageIdEnglish;
         private int _languageIdLine2 = LanguageIdEnglish;
 
-        public bool Save(string fileName, Subtitle subtitle, bool batchMode = false)
+        public bool Save(string fileName, Subtitle subtitle, StringBuilder log, bool batchMode = false)
         {
             using (var fs = new FileStream(fileName, FileMode.Create, FileAccess.Write))
             {
-                return Save(fileName, fs, subtitle, batchMode);
+                return Save(fileName, fs, subtitle, log, batchMode);
             }
         }
 
-        public bool Save(string fileName, Stream stream, Subtitle subtitle, bool batchMode)
+        public bool Save(string fileName, Stream stream, Subtitle subtitle, StringBuilder log, bool batchMode)
         {
             int russianCount = 0;
             char[] logoGrams = { '的', '是', '啊', '吧', '好', '吧', '亲', '爱', '的', '早', '上' };
@@ -612,7 +612,7 @@ namespace seconv.libse.SubtitleFormats
                 bool hasBox = Utilities.RemoveSsaTags(p.Text).StartsWith("<box>");
                 var text = p.Text.Replace("<box>", string.Empty).Replace("</box>", string.Empty);
                 text = HtmlUtil.RemoveOpenCloseTags(Utilities.RemoveSsaTags(text), HtmlUtil.TagBold, HtmlUtil.TagFont, HtmlUtil.TagBold);
-                WriteText(stream, text, p == subtitle.Paragraphs[subtitle.Paragraphs.Count - 1], _languageIdLine1, hasBox);
+                WriteText(stream, text, p == subtitle.Paragraphs[subtitle.Paragraphs.Count - 1], _languageIdLine1, hasBox, log);
 
                 number += 16;
             }
@@ -646,7 +646,7 @@ namespace seconv.libse.SubtitleFormats
             return buffer;
         }
 
-        private static void WriteText(Stream fs, string text, bool isLast, int languageIdLine, bool useBox)
+        private static void WriteText(Stream fs, string text, bool isLast, int languageIdLine, bool useBox, StringBuilder log)
         {
             var lines = text.SplitToLines();
             if (lines.Count > 2)
@@ -654,7 +654,7 @@ namespace seconv.libse.SubtitleFormats
                 lines = Utilities.AutoBreakLine(text).SplitToLines();
             }
 
-            string line1 = string.Empty;
+            var line1 = string.Empty;
             string line2;
             if (lines.Count > 1)
             {
@@ -666,7 +666,7 @@ namespace seconv.libse.SubtitleFormats
                 line2 = lines[0];
             }
 
-            var buffer = GetTextAsBytes(line1, languageIdLine);
+            var buffer = GetTextAsBytes(line1, languageIdLine, log);
             fs.Write(buffer, 0, buffer.Length);
 
             buffer = new byte[] { 00, 00, 00, 00, 00, 00 };
@@ -677,7 +677,7 @@ namespace seconv.libse.SubtitleFormats
 
             fs.Write(buffer, 0, buffer.Length);
 
-            buffer = GetTextAsBytes(line2, languageIdLine);
+            buffer = GetTextAsBytes(line2, languageIdLine, log);
             fs.Write(buffer, 0, buffer.Length);
 
             buffer = new byte[] { 00, 00, 00, 00 };
@@ -687,18 +687,18 @@ namespace seconv.libse.SubtitleFormats
             }
         }
 
-        private static byte[] GetTextAsBytes(string text, int languageId)
+        private static byte[] GetTextAsBytes(string text, int languageId, StringBuilder log)
         {
             var buffer = new byte[51];
-            int skipCount = 0;
-            for (int i = 0; i < buffer.Length; i++)
+            var skipCount = 0;
+            for (var i = 0; i < buffer.Length; i++)
             {
                 buffer[i] = 0x7F;
             }
 
             if (languageId == LanguageIdChineseTraditional || languageId == LanguageIdChineseSimplified)
             {
-                for (int i = 0; i < buffer.Length; i++)
+                for (var i = 0; i < buffer.Length; i++)
                 {
                     buffer[i] = 0;
                 }
@@ -713,23 +713,28 @@ namespace seconv.libse.SubtitleFormats
             }
 
             var encoding = Encoding.Default;
-            int index = 0;
+            var index = 0;
 
             if (languageId == LanguageIdHebrew)
             {
                 text = ReverseAnsi(text);
             }
 
-            for (int i = 0; i < text.Length; i++)
+            for (var i = 0; i < text.Length; i++)
             {
                 var current = text[i];
                 if (skipCount > 0)
                 {
                     skipCount--;
                 }
+                else if (index >= 51)
+                {
+                    log.AppendLine($"Cavena890 warning: Text will be truncated as line is longer than 51 ({text.Length}): {text}");
+                    skipCount = text.Length;
+                }
                 else if (languageId == LanguageIdHebrew)
                 {
-                    int letterIndex = HebrewLetters.IndexOf(current.ToString(CultureInfo.InvariantCulture));
+                    var letterIndex = HebrewLetters.IndexOf(current.ToString(CultureInfo.InvariantCulture));
                     if (letterIndex >= 0)
                     {
                         buffer[index] = (byte)HebrewCodes[letterIndex];
@@ -748,6 +753,7 @@ namespace seconv.libse.SubtitleFormats
                     {
                         buffer[index] = encoding.GetBytes(new[] { current })[0];
                     }
+
                     index++;
                 }
                 else if (languageId == LanguageIdChineseTraditional || languageId == LanguageIdChineseSimplified)
@@ -1307,6 +1313,7 @@ namespace seconv.libse.SubtitleFormats
                         {
                             buffer[index] = encoding.GetBytes(new[] { current })[0];
                         }
+
                         index++;
                     }
                 }
@@ -1335,6 +1342,7 @@ namespace seconv.libse.SubtitleFormats
                     ansi.Append(ch);
                 }
             }
+
             if (ansi.Length > 0)
             {
                 sb.Append(Utilities.ReverseString(ansi.ToString()));

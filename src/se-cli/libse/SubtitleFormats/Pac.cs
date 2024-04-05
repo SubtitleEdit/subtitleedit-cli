@@ -1015,15 +1015,15 @@ namespace seconv.libse.SubtitleFormats
         private bool DoWritePacHeaderOpt => IsFpc; // Unknown paragraph header. Seems optional both for PAC and FPC: inserted here for expected broader FPC compatibility, including prior versions of SubtitleEdit
         private static readonly byte[] PacHeaderOpt = { 0x80, 0x80, 0x80 };
 
-        public bool Save(string fileName, Subtitle subtitle)
+        public bool Save(string fileName, Subtitle subtitle, StringBuilder log)
         {
             using (var fs = new FileStream(fileName, FileMode.Create, FileAccess.Write))
             {
-                return Save(fileName, fs, subtitle);
+                return Save(fileName, fs, subtitle, log);
             }
         }
 
-        public bool Save(string fileName, Stream stream, Subtitle subtitle)
+        public bool Save(string fileName, Stream stream, Subtitle subtitle, StringBuilder log)
         {
             _fileName = fileName;
 
@@ -2457,9 +2457,9 @@ namespace seconv.libse.SubtitleFormats
             internal int Priority { get; set; }
         }
 
-        public bool Save(string fileName, Stream stream, Subtitle subtitle, bool batchMode)
+        public bool Save(string fileName, Stream stream, Subtitle subtitle, StringBuilder log, bool batchMode)
         {
-            return Save(fileName, stream, subtitle);
+            return Save(fileName, stream, subtitle, log);
         }
     }
 }
