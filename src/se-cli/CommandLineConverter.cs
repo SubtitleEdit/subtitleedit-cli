@@ -1,11 +1,15 @@
-﻿using seconv.libse.Common;
+﻿using seconv.libse.BluRaySup;
+using seconv.libse.Common;
 using seconv.libse.ContainerFormats.Matroska;
 using seconv.libse.Forms;
+using seconv.libse.Ocr;
 using seconv.libse.SubtitleFormats;
+using System;
 using System.Drawing;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
+using SkiaSharp;
 
 namespace seconv
 {
@@ -125,7 +129,7 @@ namespace seconv
                 _stdOutWriter.WriteLine("        /targetfps:<frame rate>");
                 _stdOutWriter.WriteLine("        /teletextonly");
                 _stdOutWriter.WriteLine("        /track-number:<comma separated track number list>");
-                //_stdOutWriter.WriteLine("        /ocrdb:<ocr db/dictionary> (e.g. \"eng\" or \"latin\")");
+                _stdOutWriter.WriteLine("        /ocrdb:<ocr db> (e.g. \"latin\")");
                 _stdOutWriter.WriteLine("      The following operations are applied in command line order");
                 _stdOutWriter.WriteLine("      from left to right, and can be specified multiple times.");
                 _stdOutWriter.WriteLine("        /" + BatchAction.ApplyDurationLimits);
@@ -296,6 +300,8 @@ namespace seconv
                         }
                     }
                 }
+
+                var ocrDb = GetArgument(unconsumedArguments, "ocrdb:");
 
                 var pacCodePage = -1;
                 {
@@ -548,6 +554,12 @@ namespace seconv
                             }
                         }
 
+                        if (!done && FileUtil.IsBluRaySup(fileName))
+                        {
+                            _stdOutWriter.WriteLine("Found Blu-Ray subtitle format");
+                            ConvertBluRaySubtitle(fileName, targetFormat, offset, targetEncoding, outputFolder, targetFileName, count, ref converted, ref errors, formats, overwrite, pacCodePage, targetFrameRate, multipleReplaceImportFiles, actions, forcedOnly, ocrDb, resolution, renumber: renumber, adjustDurationMs: adjustDurationMs);
+                            done = true;
+                        }
 
                         if (fileInfo.Extension is ".mp4" or ".m4v" or ".m4s" or ".3gp" && fileInfo.Length > 10000)
                         {
@@ -685,6 +697,84 @@ namespace seconv
             }
 
             return (count == converted && errors == 0) ? 0 : 1;
+        }
+
+        private static void ConvertBluRaySubtitle(string fileName, string targetFormat, TimeSpan offset, TextEncoding targetEncoding, string outputFolder, string targetFileName, int count, ref int converted, ref int errors, List<SubtitleFormat> formats, bool overwrite, int pacCodePage, double? targetFrameRate, HashSet<string> multipleReplaceImportFiles, List<BatchAction> actions, bool forcedOnly, string ocrDb, Point? resolution, int? renumber, double? adjustDurationMs)
+        {
+            var format = Utilities.GetSubtitleFormatByFriendlyName(targetFormat) ?? new SubRip();
+
+            _stdOutWriter?.WriteLine($"Loading subtitles from file \"{fileName}\"");
+            var log = new StringBuilder();
+            var bluRaySubtitles = BluRaySupParser.ParseBluRaySup(fileName, log);
+
+            if (string.IsNullOrEmpty(ocrDb))
+            {
+                ocrDb = "latin";
+            }
+
+            if (!ocrDb.EndsWith(".nocr", StringComparison.InvariantCultureIgnoreCase))
+            {
+                ocrDb += ".nocr";
+            }
+
+            var folder = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()!.Location);
+
+            var nOcrFileName = Path.Combine(folder, ocrDb);
+            if (!File.Exists(nOcrFileName))
+            {
+                errors++;
+                _stdOutWriter?.WriteLine($"ERROR: OCR database file \"{nOcrFileName}\" not found.");
+                return;
+            }
+
+            var nOcrDb = new NOcrDb(nOcrFileName);
+            var nOcrCaseFixer = new NOcrCaseFixer();
+            var sub = new Subtitle();
+            foreach (var pcsData in bluRaySubtitles)
+            {
+                sub.Paragraphs.Add(new Paragraph(string.Empty, pcsData.StartTime / 90.0, pcsData.EndTime / 90.0));
+            }
+
+            _stdOutWriter?.Write("OCR...");
+            Parallel.For(0, sub.Paragraphs.Count, i =>
+            {
+                var pcsData = bluRaySubtitles[i];
+                var p = sub.Paragraphs[i];
+                p.Text = NOcr(nOcrDb, pcsData.GetBitmap(), nOcrCaseFixer);
+            });
+            _stdOutWriter?.WriteLine(" done.");
+
+            sub.Renumber();
+
+            _stdOutWriter?.WriteLine("Converted subtitle");
+            BatchConvertSave(targetFormat, offset, string.Empty, targetEncoding, outputFolder, targetFileName, count, ref converted, ref errors, formats, fileName, sub, format, null, overwrite, pacCodePage, targetFrameRate, multipleReplaceImportFiles, actions, resolution, renumber: renumber, adjustDurationMs: adjustDurationMs);
+        }
+
+        private static string NOcr(NOcrDb nOcrDb, SKBitmap bitmap, NOcrCaseFixer nOcrCaseFixer)
+        {
+            var nBmp = new NikseBitmap2(bitmap);
+            nBmp.MakeTwoColor(200);
+            nBmp.CropTop(0, new SKColor(0, 0, 0, 0));
+            var list = NikseBitmapImageSplitter2.SplitBitmapToLettersNew(nBmp, 12, false, true, 20, true);
+            var sb = new StringBuilder();
+
+            foreach (var splitterItem in list)
+            {
+                if (splitterItem.NikseBitmap == null)
+                {
+                    if (splitterItem.SpecialCharacter != null)
+                    {
+                        sb.Append(splitterItem.SpecialCharacter);
+                    }
+                }
+                else
+                {
+                    var match = nOcrDb.GetMatch(splitterItem.NikseBitmap, splitterItem.Top, true, 100);
+                    sb.Append(match != null ? nOcrCaseFixer.FixUppercaseLowercaseIssues(splitterItem, match) : "*");
+                }
+            }
+
+            return sb.ToString().Trim();
         }
 
         private static bool IsFileLengthOkForTextSubtitle(string fileName, FileInfo fileInfo)
