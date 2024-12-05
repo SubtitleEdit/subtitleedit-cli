@@ -1,6 +1,4 @@
-﻿using seconv.libse.Common;
-using seconv.libse.ContainerFormats.Matroska;
-using seconv.libse.ContainerFormats.Mp4;
+﻿using seconv.libse.ContainerFormats.Matroska;
 using seconv.libse.Forms;
 using seconv.libse.SubtitleFormats;
 using System.Drawing;
@@ -45,6 +43,7 @@ namespace seconv
             RemoveLineBreaks,
             DeleteLines,
             AssaChangeRes,
+            ConvertColorsToDialog,
         }
 
         internal static void ConvertOrReturn(string productIdentifier, string[] commandLineArguments)
@@ -144,6 +143,7 @@ namespace seconv
                 _stdOutWriter.WriteLine("        /" + BatchAction.RemoveTextForHI);
                 //_stdOutWriter.WriteLine("        /" + BatchAction.RedoCasing);
                 _stdOutWriter.WriteLine("        /" + BatchAction.BalanceLines);
+                _stdOutWriter.WriteLine("        /" + BatchAction.ConvertColorsToDialog);
                 _stdOutWriter.WriteLine();
                 _stdOutWriter.WriteLine("    Example: SubtitleEdit /convert *.srt sami");
                 _stdOutWriter.WriteLine("    Show this usage message: SubtitleEdit /help");
@@ -1263,6 +1263,10 @@ namespace seconv
                             {
                                 p.Text = HtmlUtil.RemoveHtmlTags(p.Text, true).Trim();
                             }
+
+                        case BatchAction.ConvertColorsToDialog:
+                            ConvertColorsToDialogUtils.ConvertColorsToDialogInSubtitle(sub, Configuration.Settings.Tools.ConvertColorsToDialogRemoveColorTags, Configuration.Settings.Tools.ConvertColorsToDialogAddNewLines, Configuration.Settings.Tools.ConvertColorsToDialogReBreakLines);
+                            break;
 
                             break;
                         case BatchAction.RedoCasing:
