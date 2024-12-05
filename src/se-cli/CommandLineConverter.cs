@@ -1,15 +1,13 @@
 ﻿using seconv.libse.BluRaySup;
-using seconv.libse.Common;
 using seconv.libse.ContainerFormats.Matroska;
 using seconv.libse.Forms;
 using seconv.libse.Ocr;
 using seconv.libse.SubtitleFormats;
-using System;
+using SkiaSharp;
 using System.Drawing;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
-using SkiaSharp;
 
 namespace seconv
 {
@@ -170,7 +168,7 @@ namespace seconv
             var count = 0;
             var converted = 0;
             var errors = 0;
-            var sw = System.Diagnostics.Stopwatch.StartNew();
+            var startTics = System.Diagnostics.Stopwatch.GetTimestamp();
             try
             {
                 var pattern = arguments[1].Trim();
@@ -691,8 +689,9 @@ namespace seconv
 
             if (count > 0)
             {
+                var timeSpan = TimeSpan.FromTicks(System.Diagnostics.Stopwatch.GetTimestamp() - startTics);
                 _stdOutWriter.WriteLine();
-                _stdOutWriter.WriteLine($"{converted} file(s) converted in {sw.Elapsed}");
+                _stdOutWriter.WriteLine($"{converted} file(s) converted in {new TimeCode(timeSpan).ToShortDisplayString()}");
                 _stdOutWriter.WriteLine();
             }
 
