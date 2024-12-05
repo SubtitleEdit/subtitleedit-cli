@@ -145,6 +145,7 @@ namespace seconv
                 _stdOutWriter.WriteLine("        /" + BatchAction.RedoCasing);
                 _stdOutWriter.WriteLine("        /" + BatchAction.BalanceLines);
                 _stdOutWriter.WriteLine("        /" + BatchAction.ConvertColorsToDialog);
+                _stdOutWriter.WriteLine("        /" + BatchAction.SplitLongLines);
                 _stdOutWriter.WriteLine();
                 _stdOutWriter.WriteLine("    Example: SubtitleEdit /convert *.srt sami");
                 _stdOutWriter.WriteLine("    Show this usage message: SubtitleEdit /help");
@@ -1267,9 +1268,21 @@ namespace seconv
                             break;
 
                         case BatchAction.ConvertColorsToDialog:
-                            ConvertColorsToDialogUtils.ConvertColorsToDialogInSubtitle(sub, Configuration.Settings.Tools.ConvertColorsToDialogRemoveColorTags, Configuration.Settings.Tools.ConvertColorsToDialogAddNewLines, Configuration.Settings.Tools.ConvertColorsToDialogReBreakLines);
+                            ConvertColorsToDialogUtils.ConvertColorsToDialogInSubtitle(sub, true, false, false);
 
                             break;
+                        case BatchAction.SplitLongLines:
+                            try
+                            {
+                                sub = SplitLongLinesHelper.SplitLongLinesInSubtitle(sub, Configuration.Settings.General.SubtitleLineMaximumLength * 2, Configuration.Settings.General.SubtitleLineMaximumLength);
+                            }
+                            catch
+                            {
+                                // ignore
+                            }
+
+                            break;
+
                         case BatchAction.RedoCasing:
                             var language = LanguageAutoDetect.AutoDetectGoogleLanguage(sub);
                             var fixCasing = new FixCasing(language)
