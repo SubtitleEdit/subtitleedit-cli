@@ -1,6 +1,4 @@
-﻿using seconv.libse.Common;
-
-namespace seconv.libse.ContainerFormats.Matroska
+﻿namespace seconv.libse.ContainerFormats.Matroska
 {
     public class MatroskaSubtitle
     {

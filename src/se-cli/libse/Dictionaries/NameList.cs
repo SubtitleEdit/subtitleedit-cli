@@ -1,5 +1,4 @@
 ﻿using System.Xml;
-using seconv.libse.Common;
 
 namespace seconv.libse.Dictionaries
 {

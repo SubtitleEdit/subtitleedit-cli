@@ -1,7 +1,6 @@
 ﻿// (c) Giora Tamir (giora@gtamir.com), 2005
 
 using System.Text;
-using seconv.libse.Common;
 
 namespace seconv.libse.ContainerFormats
 {

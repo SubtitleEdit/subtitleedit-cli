@@ -1,6 +1,4 @@
-﻿using seconv.libse.Common;
-
-namespace seconv.libse.NetflixQualityCheck
+﻿namespace seconv.libse.NetflixQualityCheck
 {
     public class NetflixCheckGlyph : INetflixQualityChecker
     {

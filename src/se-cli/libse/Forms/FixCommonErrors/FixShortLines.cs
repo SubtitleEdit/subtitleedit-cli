@@ -1,7 +1,4 @@
-﻿using seconv.libse.Common;
-using seconv.libse.Interfaces;
-
-namespace seconv.libse.Forms.FixCommonErrors
+﻿namespace seconv.libse.Forms.FixCommonErrors
 {
     public class FixShortLines : IFixCommonError
     {

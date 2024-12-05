@@ -1,6 +1,4 @@
 ﻿using System.Text;
-using seconv.libse.Common;
-using seconv.libse.Interfaces;
 using seconv.libse.SubtitleFormats;
 
 namespace seconv.libse.Forms.FixCommonErrors

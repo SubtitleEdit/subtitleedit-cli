@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using seconv.libse.Common;
 
 namespace seconv.libse.ContainerFormats
 {

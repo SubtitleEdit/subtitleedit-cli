@@ -1,6 +1,4 @@
-﻿using seconv.libse.Common;
-
-namespace seconv.libse.ContainerFormats.TransportStream
+﻿namespace seconv.libse.ContainerFormats.TransportStream
 {
     public class ProgramMapTableParser
     {

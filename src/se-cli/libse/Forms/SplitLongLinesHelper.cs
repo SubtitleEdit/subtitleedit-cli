@@ -1,6 +1,4 @@
-﻿using seconv.libse.Common;
-
-namespace seconv.libse.Forms
+﻿namespace seconv.libse.Forms
 {
     public static class SplitLongLinesHelper
     {

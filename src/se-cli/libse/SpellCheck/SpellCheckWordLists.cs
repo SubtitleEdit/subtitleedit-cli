@@ -1,8 +1,6 @@
 ﻿using System.Text;
 using System.Xml;
-using seconv.libse.Common;
 using seconv.libse.Dictionaries;
-using seconv.libse.Interfaces;
 
 namespace seconv.libse.SpellCheck
 {

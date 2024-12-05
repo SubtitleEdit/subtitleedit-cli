@@ -11,7 +11,6 @@
  */
 
 using System.Text;
-using seconv.libse.Common;
 
 namespace seconv.libse.ContainerFormats.TransportStream
 {

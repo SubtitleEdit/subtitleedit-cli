@@ -1,7 +1,4 @@
-﻿using seconv.libse.Common;
-using seconv.libse.Dictionaries;
-using seconv.libse.Enums;
-using seconv.libse.Interfaces;
+﻿using seconv.libse.Dictionaries;
 
 namespace seconv.libse.Forms.FixCommonErrors
 {

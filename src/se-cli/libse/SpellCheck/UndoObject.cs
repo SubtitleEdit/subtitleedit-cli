@@ -1,7 +1,4 @@
-﻿using seconv.libse.Common;
-using seconv.libse.Enums;
-
-namespace seconv.libse.SpellCheck
+﻿namespace seconv.libse.SpellCheck
 {
     public class UndoObject
     {

@@ -1,6 +1,4 @@
 ﻿using System.Globalization;
-using seconv.libse.Common;
-using seconv.libse.Interfaces;
 
 namespace seconv.libse.Forms.FixCommonErrors
 {

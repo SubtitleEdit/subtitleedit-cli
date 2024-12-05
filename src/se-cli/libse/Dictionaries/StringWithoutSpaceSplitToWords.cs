@@ -1,6 +1,4 @@
-﻿using seconv.libse.Common;
-
-namespace seconv.libse.Dictionaries
+﻿namespace seconv.libse.Dictionaries
 {
     public static class StringWithoutSpaceSplitToWords
     {

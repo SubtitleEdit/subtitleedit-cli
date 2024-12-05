@@ -1,7 +1,5 @@
 ﻿// (c) Giora Tamir (giora@gtamir.com), 2005
 
-using System.Runtime.Serialization;
-
 namespace seconv.libse.ContainerFormats
 {
     #region RiffParserException
@@ -20,11 +18,6 @@ namespace seconv.libse.ContainerFormats
 
         public RiffParserException(string message, Exception inner)
             : base(message, inner)
-        {
-        }
-
-        public RiffParserException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
         {
         }
     }
