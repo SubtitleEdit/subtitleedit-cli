@@ -1,4 +1,5 @@
-﻿using seconv.libse.ContainerFormats.Matroska;
+﻿using seconv.libse.Common;
+using seconv.libse.ContainerFormats.Matroska;
 using seconv.libse.Forms;
 using seconv.libse.SubtitleFormats;
 using System.Drawing;
@@ -141,7 +142,7 @@ namespace seconv
                 _stdOutWriter.WriteLine("        /" + BatchAction.ReverseRtlStartEnd);
                 _stdOutWriter.WriteLine("        /" + BatchAction.RemoveFormatting);
                 _stdOutWriter.WriteLine("        /" + BatchAction.RemoveTextForHI);
-                //_stdOutWriter.WriteLine("        /" + BatchAction.RedoCasing);
+                _stdOutWriter.WriteLine("        /" + BatchAction.RedoCasing);
                 _stdOutWriter.WriteLine("        /" + BatchAction.BalanceLines);
                 _stdOutWriter.WriteLine("        /" + BatchAction.ConvertColorsToDialog);
                 _stdOutWriter.WriteLine();
@@ -1263,23 +1264,22 @@ namespace seconv
                             {
                                 p.Text = HtmlUtil.RemoveHtmlTags(p.Text, true).Trim();
                             }
+                            break;
 
                         case BatchAction.ConvertColorsToDialog:
                             ConvertColorsToDialogUtils.ConvertColorsToDialogInSubtitle(sub, Configuration.Settings.Tools.ConvertColorsToDialogRemoveColorTags, Configuration.Settings.Tools.ConvertColorsToDialogAddNewLines, Configuration.Settings.Tools.ConvertColorsToDialogReBreakLines);
-                            break;
 
                             break;
                         case BatchAction.RedoCasing:
-                            //using (var changeCasing = new ChangeCasing())
-                            //{
-                            //    changeCasing.FixCasing(sub, LanguageAutoDetect.AutoDetectGoogleLanguage(sub));
-                            //}
-
-                            //using (var changeCasingNames = new ChangeCasingNames())
-                            //{
-                            //    changeCasingNames.Initialize(sub);
-                            //    changeCasingNames.FixCasing();
-                            //}
+                            var language = LanguageAutoDetect.AutoDetectGoogleLanguage(sub);
+                            var fixCasing = new FixCasing(language)
+                            {
+                                FixNormal = true,
+                                FixNormalOnlyAllUppercase = false,
+                                FixMakeUppercase = false,
+                                FixMakeLowercase = false,
+                            };
+                            fixCasing.Fix(sub);
 
                             break;
                         case BatchAction.ApplyDurationLimits:
