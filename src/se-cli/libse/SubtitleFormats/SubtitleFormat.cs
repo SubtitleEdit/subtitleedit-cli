@@ -144,6 +144,7 @@ namespace seconv.libse.SubtitleFormats
                     new KanopyHtml(),
                     new LambdaCap(),
                     new Lrc(),
+                    new Lrc3DigitsMs(),
                     new LrcNoEndTime(),
                     new MacSub(),
                     new MagicVideoTitler(),
@@ -210,6 +211,7 @@ namespace seconv.libse.SubtitleFormats
                     new TimedText200604CData(),
                     new TimedText200604Ooyala(),
                     new TimedText(),
+                    new TimedTextImsc11(),
                     new TitleExchangePro(),
                     new Titra(),
                     new TmpegEncText(),
@@ -438,6 +440,11 @@ namespace seconv.libse.SubtitleFormats
             return (int)Math.Round(frames * (TimeCode.BaseUnit / GetFrameForCalculation(Configuration.Settings.General.CurrentFrameRate)), MidpointRounding.AwayFromZero);
         }
 
+        public static int FramesToMilliseconds(double frames, double frameRate)
+        {
+            return (int)Math.Round(frames * (TimeCode.BaseUnit / GetFrameForCalculation(frameRate)), MidpointRounding.AwayFromZero);
+        }
+
         public static int FramesToMillisecondsMax999(double frames)
         {
             var ms = (int)Math.Round(frames * (TimeCode.BaseUnit / GetFrameForCalculation(Configuration.Settings.General.CurrentFrameRate)), MidpointRounding.AwayFromZero);
@@ -630,6 +637,7 @@ namespace seconv.libse.SubtitleFormats
                 new JsonArchtime(),
                 new MacCaption10(),
                 new Rdf1(),
+                new ClqttJson(),
                 new CombinedXml(),
                 new AudacityLabels(),
                 new Fte(),

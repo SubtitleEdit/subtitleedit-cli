@@ -69,17 +69,8 @@ namespace seconv.libse.SubtitleFormats
             subtitle.Renumber();
         }
 
-        private static string EncodeTimeCode(TimeCode time)
-        {
-            long frames = (long)(time.TotalMilliseconds / (TimeCode.BaseUnit / Configuration.Settings.General.CurrentFrameRate));
-            return frames.ToString();
-        }
+        private static string EncodeTimeCode(TimeCode time) => MillisecondsToFrames(time.TotalMilliseconds).ToString();
 
-        private static TimeCode DecodeTimeCode(string timePart)
-        {
-            int milliseconds = (int)Math.Round(TimeCode.BaseUnit / Configuration.Settings.General.CurrentFrameRate * int.Parse(timePart));
-            return new TimeCode(milliseconds);
-        }
-
+        private static TimeCode DecodeTimeCode(string timePart) => new TimeCode(FramesToMilliseconds(int.Parse(timePart)));
     }
 }

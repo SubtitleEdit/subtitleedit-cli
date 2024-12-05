@@ -27,7 +27,7 @@ namespace seconv.libse.SubtitleFormats
         {
             var sb = new StringBuilder();
             lines.ForEach(line => sb.AppendLine(line));
-            string xmlAsString = sb.ToString().Trim();
+            var xmlAsString = sb.ToString().Trim();
 
             if (xmlAsString.Contains("xmlns:tts=\"http://www.w3.org/2006/04"))
             {
@@ -37,6 +37,16 @@ namespace seconv.libse.SubtitleFormats
             if (xmlAsString.Contains("http://www.w3.org/ns/ttml"))
             {
                 xmlAsString = xmlAsString.RemoveControlCharactersButWhiteSpace();
+
+                if (xmlAsString.Contains("profile/imsc1"))
+                {
+                    var f = new TimedTextImsc11();
+                    if (f.IsMine(lines, fileName))
+                    {
+                        return false;
+                    }
+                }
+
                 var xml = new XmlDocument { XmlResolver = null };
                 try
                 {
@@ -75,16 +85,23 @@ namespace seconv.libse.SubtitleFormats
                     }
                 }
             }
+
             return false;
         }
 
         internal static string ConvertToTimeString(TimeCode time)
         {
-            var timeCodeFormat = Configuration.Settings.SubtitleSettings.TimedText10TimeCodeFormat.Trim().ToLowerInvariant();
+            return ConvertToTimeString(time, Configuration.Settings.SubtitleSettings.TimedText10TimeCodeFormat);
+        }
+
+        internal static string ConvertToTimeString(TimeCode time, string timeCodeFormat)
+        {
+            timeCodeFormat = timeCodeFormat.Trim().ToLowerInvariant();
             if (timeCodeFormat == "source" && !string.IsNullOrWhiteSpace(Configuration.Settings.SubtitleSettings.TimedText10TimeCodeFormatSource))
             {
                 timeCodeFormat = Configuration.Settings.SubtitleSettings.TimedText10TimeCodeFormatSource.Trim().ToLowerInvariant();
             }
+
             switch (timeCodeFormat)
             {
                 case "source":
@@ -191,7 +208,7 @@ namespace seconv.libse.SubtitleFormats
             "           <region tts:extent=\"80% 40%\" tts:origin=\"10% 50%\" tts:displayAlign=\"after\" tts:textAlign=\"start\" xml:id=\"bottomLeft\" />" + Environment.NewLine +
             // Middle column
             "           <region tts:extent=\"80% 40%\" tts:origin=\"10% 10%\" tts:displayAlign=\"before\" tts:textAlign=\"center\" xml:id=\"topCenter\" />" + Environment.NewLine +
-            "           <region tts:extent=\"80% 40%\" tts:origin=\"10% 30%\" tts:displayAlign=\"center\" tts:textAlign=\"center\" xml:id=\"centerСenter\" />" + Environment.NewLine +
+            "           <region tts:extent=\"80% 40%\" tts:origin=\"10% 30%\" tts:displayAlign=\"center\" tts:textAlign=\"center\" xml:id=\"centerCenter\" />" + Environment.NewLine +
             "           <region tts:extent=\"80% 40%\" tts:origin=\"10% 50%\" tts:displayAlign=\"after\" tts:textAlign=\"center\" xml:id=\"bottomCenter\" />" + Environment.NewLine +
             // Right column
             "           <region tts:extent=\"80% 40%\" tts:origin=\"10% 10%\" tts:displayAlign=\"before\" tts:textAlign=\"end\" xml:id=\"topRight\" />" + Environment.NewLine +
@@ -438,7 +455,7 @@ namespace seconv.libse.SubtitleFormats
                     region = "centerLeft";
                 }
 
-                if (text.StartsWith("{\\an5}", StringComparison.Ordinal) && AddDefaultRegionIfNotExists(xml, "centerСenter"))
+                if (text.StartsWith("{\\an5}", StringComparison.Ordinal) && AddDefaultRegionIfNotExists(xml, "centerCenter"))
                 {
                     region = "centerСenter";
                 }
@@ -467,7 +484,7 @@ namespace seconv.libse.SubtitleFormats
             {
                 if (text.StartsWith("{\\an8}", StringComparison.Ordinal))
                 {
-                    var topRegions = GetRegionsTopFromHeader(xml.OuterXml);
+                    var topRegions = GetRegionsTopFromHeader(xml);
                     if (topRegions.Count == 1)
                     {
                         region = topRegions[0];
@@ -484,7 +501,7 @@ namespace seconv.libse.SubtitleFormats
                 }
                 else if (text.StartsWith("{\\an2}", StringComparison.Ordinal) || !text.Contains("{\\an"))
                 {
-                    var bottomRegions = GetRegionsBottomFromHeader(xml.OuterXml);
+                    var bottomRegions = GetRegionsBottomFromHeader(xml);
                     if (bottomRegions.Count == 1)
                     {
                         region = bottomRegions[0];
@@ -507,8 +524,21 @@ namespace seconv.libse.SubtitleFormats
             try
             {
                 text = string.Join("<br/>", text.SplitToLines());
-                XmlDocument paragraphContent = new XmlDocument();
-                paragraphContent.LoadXml($"<root>{text.Replace("&", "&amp;")}</root>");
+                var paragraphContent = new XmlDocument();
+
+                try
+                {
+                    paragraphContent.LoadXml($"<root>{text.Replace("&", "&amp;")}</root>");
+                }
+                catch 
+                {
+                    var guid = Guid.NewGuid().ToString();
+                    var tempText = text.Replace("&amp;", guid);
+                    tempText = tempText.Replace("&", "&amp;");
+                    tempText = tempText.Replace(guid, "&amp;");
+                    paragraphContent.LoadXml($"<root>{tempText}</root>");
+                }
+
                 ConvertParagraphNodeToTtmlNode(paragraphContent.DocumentElement, xml, paragraph);
             }
             catch  // Wrong markup, clear it
@@ -809,7 +839,7 @@ namespace seconv.libse.SubtitleFormats
                 // ignored
             }
 
-            var topRegions = GetRegionsTopFromHeader(xml.OuterXml);
+            var topRegions = GetRegionsTopFromHeader(xml);
             XmlNode lastDiv = null;
             foreach (XmlNode node in body.SelectNodes("//ttml:p", nsmgr))
             {
@@ -872,7 +902,7 @@ namespace seconv.libse.SubtitleFormats
                             new KeyValuePair<string, string>("bottomCenter", "{\\an2}"),
                             new KeyValuePair<string, string>("bottomRight", "{\\an3}"),
                             new KeyValuePair<string, string>("centerLeft", "{\\an4}"),
-                            new KeyValuePair<string, string>("centerСenter", "{\\an5}"),
+                            new KeyValuePair<string, string>("centerCenter", "{\\an5}"),
                             new KeyValuePair<string, string>("centerRight", "{\\an6}"),
                             new KeyValuePair<string, string>("topLeft", "{\\an7}"),
                             new KeyValuePair<string, string>("topCenter", "{\\an8}"),
@@ -952,9 +982,9 @@ namespace seconv.libse.SubtitleFormats
 
         internal static void ExtractTimeCodes(XmlNode paragraph, Subtitle subtitle, out TimeCode begin, out TimeCode end)
         {
-            string beginAttr = TryGetAttribute(paragraph, "begin", TtmlNamespace);
-            string endAttr = TryGetAttribute(paragraph, "end", TtmlNamespace);
-            string durAttr = TryGetAttribute(paragraph, "dur", TtmlNamespace);
+            var beginAttr = TryGetAttribute(paragraph, "begin", TtmlNamespace);
+            var endAttr = TryGetAttribute(paragraph, "end", TtmlNamespace);
+            var durAttr = TryGetAttribute(paragraph, "dur", TtmlNamespace);
 
             begin = new TimeCode();
             if (beginAttr.Length > 0)
@@ -1077,6 +1107,11 @@ namespace seconv.libse.SubtitleFormats
             }
 
             if (_endsWithTreeDigits.IsMatch(timeCode))
+            {
+                return false;
+            }
+
+            if (timeCode.Split(':', '.', ',', ';').Length < 4)
             {
                 return false;
             }
@@ -1317,6 +1352,10 @@ namespace seconv.libse.SubtitleFormats
             {
                 return new TimeCode(int.Parse(parts[0]), int.Parse(parts[1]), int.Parse(parts[2]), 0);
             }
+            else if (parts.Length == 3)
+            {
+                return new TimeCode(int.Parse(parts[0]), int.Parse(parts[1]), int.Parse(parts[2]), 0);
+            }
 
             if (frames)
             {
@@ -1405,19 +1444,17 @@ namespace seconv.libse.SubtitleFormats
             return list;
         }
 
-        public static List<string> GetRegionsTopFromHeader(string xmlAsString)
+        public static List<string> GetRegionsTopFromHeader(XmlDocument xml)
         {
             var list = new List<string>();
-            var xml = new XmlDocument();
             try
             {
-                xml.LoadXml(xmlAsString);
-                var nsmgr = new XmlNamespaceManager(xml.NameTable);
-                nsmgr.AddNamespace("ttml", "http://www.w3.org/ns/ttml");
-                XmlNode head = xml.DocumentElement.SelectSingleNode("ttml:head", nsmgr);
-                foreach (XmlNode node in head.SelectNodes("//ttml:region", nsmgr))
+                var namespaceManager = new XmlNamespaceManager(xml.NameTable);
+                namespaceManager.AddNamespace("ttml", "http://www.w3.org/ns/ttml");
+                var head = xml.DocumentElement.SelectSingleNode("ttml:head", namespaceManager);
+                foreach (XmlNode node in head.SelectNodes("//ttml:region", namespaceManager))
                 {
-                    bool top = false;
+                    var top = false;
                     foreach (XmlNode styleNode in node.ChildNodes)
                     {
                         top = GetIfTopAligned(styleNode);
@@ -1453,13 +1490,11 @@ namespace seconv.libse.SubtitleFormats
             return list;
         }
 
-        public static List<string> GetRegionsBottomFromHeader(string xmlAsString)
+        public static List<string> GetRegionsBottomFromHeader(XmlDocument xml)
         {
             var list = new List<string>();
-            var xml = new XmlDocument();
             try
             {
-                xml.LoadXml(xmlAsString);
                 var nsmgr = new XmlNamespaceManager(xml.NameTable);
                 nsmgr.AddNamespace("ttml", "http://www.w3.org/ns/ttml");
                 XmlNode head = xml.DocumentElement.SelectSingleNode("ttml:head", nsmgr);
@@ -1552,11 +1587,17 @@ namespace seconv.libse.SubtitleFormats
                 {
                     return true;
                 }
-                else if (yPos <= 25 && displayAlign == "before") // before = top align
+
+                if (yPos <= 25 && displayAlign == "before") // before = top align
                 {
                     return true;
                 }
             }
+            else if (displayAlign == "before") // before = top align
+            {
+                return true;
+            }
+
             return false;
         }
 
@@ -1650,9 +1691,8 @@ namespace seconv.libse.SubtitleFormats
                 result = result.Remove(0, idx);
             }
 
-            return result
-                .Replace(" & ", " &amp; ")
-                .Replace("Q&A", "Q&amp;A");
+            var fixAmpersandRegex = new Regex("&(?!amp;)");
+            return fixAmpersandRegex.Replace(result, "&amp;");
         }
     }
 }

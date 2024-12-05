@@ -39,166 +39,7 @@ namespace seconv.libse.SubtitleFormats
         {
             using (var fs = new FileStream(fileName, FileMode.Create, FileAccess.Write))
             {
-                byte[] buffer = { 0xEA, 0x22, 1, 0 }; // header
-                fs.Write(buffer, 0, buffer.Length);
-
-                int numberOfLines = subtitle.Paragraphs.Count;
-                fs.WriteByte((byte)(numberOfLines % 256)); // paragraphs - low byte
-                fs.WriteByte((byte)(numberOfLines / 256)); // paragraphs - high byte
-
-                buffer = new byte[] { 9, 0xA8, 0xAF, 0x4F }; // ?
-                fs.Write(buffer, 0, buffer.Length);
-
-                for (int i = 0; i < 118; i++)
-                {
-                    fs.WriteByte(0);
-                }
-
-                var dictionaryLatinCode = DicCodeLatin.ToLookup(pair => pair.Value, pair => pair.Key);
-
-                // paragraphs
-                for (int index = 0; index < subtitle.Paragraphs.Count; index++)
-                {
-                    var p = subtitle.Paragraphs[index];
-                    var next = subtitle.GetParagraphOrDefault(index + 1);
-                    string text = p.Text;
-
-                    var bufferShort = new byte[]
-                    {
-                        0,
-                        0,
-                        3, // justification, 1=left, 2=right, 3=center
-                        0xE, //horizontal position, 1=top, F=bottom
-                        0x10 //horizontal position, 3=left, 0x10=center, 0x19=right
-                    };
-
-                    //styles + ?
-                    buffer = new byte[]
-                    {
-                        0x12,
-                        1,
-                        0,
-                        0,
-                        0,
-                        0,
-                        3, // justification, 1=left, 2=right, 3=center
-                        0xF, //horizontal position, 1=top, F=bottom
-                        0x10 //horizontal position, 3=left, 0x10=center, 0x19=right
-                    };
-
-                    //Normal        : 12 01 00 00 00 00 03 0F 10
-                    //Right-top     : 12 01 00 00 00 00 03 01 1C
-                    //Top           : 12 01 00 00 00 00 03 01 10
-                    //Left-top      : 12 01 00 00 00 00 03 01 05
-                    //Left          : 12 01 00 00 00 00 03 0F 0A
-                    //Right         : 12 01 00 00 00 00 03 0F 1E
-                    //Left          : 12 03 00 00 00 00 03 0F 07
-
-                    if (text.StartsWith("{\\an7}", StringComparison.Ordinal) || text.StartsWith("{\\an8}", StringComparison.Ordinal) || text.StartsWith("{\\an9}", StringComparison.Ordinal))
-                    {
-                        buffer[7] = 1; // align top (vertical)
-                        bufferShort[3] = 1; // align top (vertical)
-                    }
-                    else if (text.StartsWith("{\\an4}", StringComparison.Ordinal) || text.StartsWith("{\\an5}", StringComparison.Ordinal) || text.StartsWith("{\\an6}", StringComparison.Ordinal))
-                    {
-                        buffer[7] = 8; // center (vertical)
-                        bufferShort[3] = 8; // align top (vertical)
-                    }
-
-                    if (text.StartsWith("{\\an7}", StringComparison.Ordinal) || text.StartsWith("{\\an4}", StringComparison.Ordinal) || text.StartsWith("{\\an1}", StringComparison.Ordinal))
-                    {
-                        buffer[8] = 2; // align left (horizontal)
-                        bufferShort[4] = 2; // align left (horizontal)
-                    }
-                    else if (text.StartsWith("{\\an9}", StringComparison.Ordinal) || text.StartsWith("{\\an6}", StringComparison.Ordinal) || text.StartsWith("{\\an3}", StringComparison.Ordinal))
-                    {
-                        buffer[8] = 0x1e; // align right (vertical)
-                        bufferShort[4] = 0x1e; // align right (vertical)
-                    }
-
-                    int startTag = text.IndexOf('}');
-                    if (text.StartsWith("{\\", StringComparison.Ordinal) && startTag > 0 && startTag < 10)
-                    {
-                        text = text.Remove(0, startTag + 1);
-                    }
-
-                    var textBytes = new List<byte>();
-                    var italic = p.Text.StartsWith("<i>", StringComparison.Ordinal) && p.Text.EndsWith("</i>", StringComparison.Ordinal);
-                    text = HtmlUtil.RemoveHtmlTags(text);
-                    int j = 0;
-                    if (italic)
-                    {
-                        textBytes.Add(0xd0);
-                    }
-
-                    var encoding = Encoding.GetEncoding(1252);
-                    while (j < text.Length)
-                    {
-                        if (text.Substring(j).StartsWith(Environment.NewLine, StringComparison.Ordinal))
-                        {
-                            j += Environment.NewLine.Length;
-                            textBytes.Add(0);
-                            textBytes.Add(0);
-                            textBytes.Add(0);
-                            textBytes.Add(0);
-                            if (italic)
-                            {
-                                textBytes.Add(0xd0);
-                            }
-                        }
-                        else
-                        {
-                            if (dictionaryLatinCode.Contains(text[j]))
-                            {
-                                textBytes.AddRange(dictionaryLatinCode[text[j]]);
-                            }
-                            else
-                            {
-                                textBytes.Add(encoding.GetBytes(new[] { text[j] })[0]);
-                            }
-
-                            j++;
-                        }
-                    }
-
-                    int length = textBytes.Count + 20;
-                    long end = fs.Position + length;
-                    if (Configuration.Settings.SubtitleSettings.CheetahCaptionAlwayWriteEndTime || next == null || next.StartTime.TotalMilliseconds - p.EndTime.TotalMilliseconds >= 1500)
-                    {
-                        fs.WriteByte((byte)length);
-
-                        fs.WriteByte(p.Text.Trim().Contains(Environment.NewLine) ? (byte)0x62 : (byte)0x61);
-
-                        WriteTime(fs, p.StartTime);
-                        WriteTime(fs, p.EndTime);
-                        fs.Write(buffer, 0, buffer.Length); // styles
-                    }
-                    else
-                    {
-                        length = textBytes.Count + 20 - (buffer.Length - bufferShort.Length);
-                        end = fs.Position + length;
-                        fs.WriteByte((byte)length);
-
-                        fs.WriteByte(p.Text.Trim().Contains(Environment.NewLine) ? (byte)0x42 : (byte)0x41);
-
-                        WriteTime(fs, p.StartTime);
-                        fs.WriteByte(2);
-                        fs.WriteByte(1);
-                        fs.WriteByte(0);
-                        fs.WriteByte(0);
-                        fs.Write(bufferShort, 0, bufferShort.Length); // styles
-                    }
-
-                    foreach (byte b in textBytes) // text
-                    {
-                        fs.WriteByte(b);
-                    }
-
-                    while (end > fs.Position)
-                    {
-                        fs.WriteByte(0);
-                    }
-                }
+                new CheetahCaption().Save(fileName, fs, subtitle, false);
             }
         }
 
@@ -219,8 +60,8 @@ namespace seconv.libse.SubtitleFormats
                 {
                     if (fileName.EndsWith(".cap", StringComparison.OrdinalIgnoreCase))
                     {
-                        byte[] buffer = FileUtil.ReadAllBytesShared(fileName);
-                        for (int i = 0; i < buffer.Length - 20; i++)
+                        var buffer = FileUtil.ReadAllBytesShared(fileName);
+                        for (var i = 0; i < buffer.Length - 20; i++)
                         {
                             if (buffer[i + 0] == 0xEA &&
                                 buffer[i + 1] == 0x22 &&
@@ -246,9 +87,9 @@ namespace seconv.libse.SubtitleFormats
         {
             subtitle.Paragraphs.Clear();
             subtitle.Header = null;
-            byte[] buffer = FileUtil.ReadAllBytesShared(fileName);
+            var buffer = FileUtil.ReadAllBytesShared(fileName);
 
-            int i = 128;
+            var i = 128;
             Paragraph last = null;
             var sb = new StringBuilder();
             while (i < buffer.Length - 16)
@@ -256,7 +97,7 @@ namespace seconv.libse.SubtitleFormats
                 var p = new Paragraph();
                 int length = buffer[i];
 
-                int usedBytes = 20;
+                var usedBytes = 20;
 
                 p.StartTime = DecodeTimestamp(buffer, i + 2);
                 p.EndTime = DecodeTimestamp(buffer, i + 6);
@@ -266,9 +107,9 @@ namespace seconv.libse.SubtitleFormats
                     usedBytes = 20 - 4;
                 }
 
-                int textLength = length - usedBytes;
-                int start = usedBytes - 1;
-                for (int j = 0; j < 4 && i + start - 1 < buffer.Length; j++)
+                var textLength = length - usedBytes;
+                var start = usedBytes - 1;
+                for (var j = 0; j < 4 && i + start - 1 < buffer.Length; j++)
                 {
                     if (buffer[i + start - 1] > 0x10)
                     {
@@ -285,12 +126,12 @@ namespace seconv.libse.SubtitleFormats
                     }
 
                     sb.Clear();
-                    int j = 0;
-                    bool italics = false;
+                    var j = 0;
+                    var italics = false;
                     var encoding = Encoding.GetEncoding(1252);
                     while (j < textLength)
                     {
-                        int index = i + start + j;
+                        var index = i + start + j;
                         if (buffer[index] == 0)
                         {
                             if (italics)
@@ -357,6 +198,172 @@ namespace seconv.libse.SubtitleFormats
             }
 
             subtitle.Renumber();
+        }
+
+        public bool Save(string fileName, Stream stream, Subtitle subtitle, bool batchMode)
+        {
+            byte[] buffer = { 0xEA, 0x22, 1, 0 }; // header
+            stream.Write(buffer, 0, buffer.Length);
+
+            var numberOfLines = subtitle.Paragraphs.Count;
+            stream.WriteByte((byte)(numberOfLines % 256)); // paragraphs - low byte
+            stream.WriteByte((byte)(numberOfLines / 256)); // paragraphs - high byte
+
+            buffer = new byte[] { 9, 0xA8, 0xAF, 0x4F }; // ?
+            stream.Write(buffer, 0, buffer.Length);
+
+            for (var i = 0; i < 118; i++)
+            {
+                stream.WriteByte(0);
+            }
+
+            var dictionaryLatinCode = DicCodeLatin.ToLookup(pair => pair.Value, pair => pair.Key);
+
+            // paragraphs
+            for (var index = 0; index < subtitle.Paragraphs.Count; index++)
+            {
+                var p = subtitle.Paragraphs[index];
+                var next = subtitle.GetParagraphOrDefault(index + 1);
+                var text = p.Text;
+
+                var bufferShort = new byte[]
+                {
+                        0,
+                        0,
+                        3, // justification, 1=left, 2=right, 3=center
+                        0xE, //horizontal position, 1=top, F=bottom
+                        0x10 //horizontal position, 3=left, 0x10=center, 0x19=right
+                };
+
+                //styles + ?
+                buffer = new byte[]
+                {
+                        0x12,
+                        1,
+                        0,
+                        0,
+                        0,
+                        0,
+                        3, // justification, 1=left, 2=right, 3=center
+                        0xF, //horizontal position, 1=top, F=bottom
+                        0x10 //horizontal position, 3=left, 0x10=center, 0x19=right
+                };
+
+                //Normal        : 12 01 00 00 00 00 03 0F 10
+                //Right-top     : 12 01 00 00 00 00 03 01 1C
+                //Top           : 12 01 00 00 00 00 03 01 10
+                //Left-top      : 12 01 00 00 00 00 03 01 05
+                //Left          : 12 01 00 00 00 00 03 0F 0A
+                //Right         : 12 01 00 00 00 00 03 0F 1E
+                //Left          : 12 03 00 00 00 00 03 0F 07
+
+                if (text.StartsWith("{\\an7}", StringComparison.Ordinal) || text.StartsWith("{\\an8}", StringComparison.Ordinal) || text.StartsWith("{\\an9}", StringComparison.Ordinal))
+                {
+                    buffer[7] = 1; // align top (vertical)
+                    bufferShort[3] = 1; // align top (vertical)
+                }
+                else if (text.StartsWith("{\\an4}", StringComparison.Ordinal) || text.StartsWith("{\\an5}", StringComparison.Ordinal) || text.StartsWith("{\\an6}", StringComparison.Ordinal))
+                {
+                    buffer[7] = 8; // center (vertical)
+                    bufferShort[3] = 8; // align top (vertical)
+                }
+
+                if (text.StartsWith("{\\an7}", StringComparison.Ordinal) || text.StartsWith("{\\an4}", StringComparison.Ordinal) || text.StartsWith("{\\an1}", StringComparison.Ordinal))
+                {
+                    buffer[8] = 2; // align left (horizontal)
+                    bufferShort[4] = 2; // align left (horizontal)
+                }
+                else if (text.StartsWith("{\\an9}", StringComparison.Ordinal) || text.StartsWith("{\\an6}", StringComparison.Ordinal) || text.StartsWith("{\\an3}", StringComparison.Ordinal))
+                {
+                    buffer[8] = 0x1e; // align right (vertical)
+                    bufferShort[4] = 0x1e; // align right (vertical)
+                }
+
+                int startTag = text.IndexOf('}');
+                if (text.StartsWith("{\\", StringComparison.Ordinal) && startTag > 0 && startTag < 10)
+                {
+                    text = text.Remove(0, startTag + 1);
+                }
+
+                var textBytes = new List<byte>();
+                var italic = p.Text.StartsWith("<i>", StringComparison.Ordinal) && p.Text.EndsWith("</i>", StringComparison.Ordinal);
+                text = HtmlUtil.RemoveHtmlTags(text);
+                int j = 0;
+                if (italic)
+                {
+                    textBytes.Add(0xd0);
+                }
+
+                var encoding = Encoding.GetEncoding(1252);
+                while (j < text.Length)
+                {
+                    if (text.Substring(j).StartsWith(Environment.NewLine, StringComparison.Ordinal))
+                    {
+                        j += Environment.NewLine.Length;
+                        textBytes.Add(0);
+                        textBytes.Add(0);
+                        textBytes.Add(0);
+                        textBytes.Add(0);
+                        if (italic)
+                        {
+                            textBytes.Add(0xd0);
+                        }
+                    }
+                    else
+                    {
+                        if (dictionaryLatinCode.Contains(text[j]))
+                        {
+                            textBytes.AddRange(dictionaryLatinCode[text[j]]);
+                        }
+                        else
+                        {
+                            textBytes.Add(encoding.GetBytes(new[] { text[j] })[0]);
+                        }
+
+                        j++;
+                    }
+                }
+
+                var length = textBytes.Count + 20;
+                var end = stream.Position + length;
+                if (Configuration.Settings.SubtitleSettings.CheetahCaptionAlwayWriteEndTime || next == null || next.StartTime.TotalMilliseconds - p.EndTime.TotalMilliseconds >= 1500)
+                {
+                    stream.WriteByte((byte)length);
+
+                    stream.WriteByte(p.Text.Trim().Contains(Environment.NewLine) ? (byte)0x62 : (byte)0x61);
+
+                    WriteTime(stream, p.StartTime);
+                    WriteTime(stream, p.EndTime);
+                    stream.Write(buffer, 0, buffer.Length); // styles
+                }
+                else
+                {
+                    length = textBytes.Count + 20 - (buffer.Length - bufferShort.Length);
+                    end = stream.Position + length;
+                    stream.WriteByte((byte)length);
+
+                    stream.WriteByte(p.Text.Trim().Contains(Environment.NewLine) ? (byte)0x42 : (byte)0x41);
+
+                    WriteTime(stream, p.StartTime);
+                    stream.WriteByte(2);
+                    stream.WriteByte(1);
+                    stream.WriteByte(0);
+                    stream.WriteByte(0);
+                    stream.Write(bufferShort, 0, bufferShort.Length); // styles
+                }
+
+                foreach (var b in textBytes) // text
+                {
+                    stream.WriteByte(b);
+                }
+
+                while (end > stream.Position)
+                {
+                    stream.WriteByte(0);
+                }
+            }
+
+            return true;
         }
     }
 }
