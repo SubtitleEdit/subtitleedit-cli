@@ -1,8 +1,8 @@
 # Subtitle Edit cli 
 
-.NET 6 console subtitle converter for Windows, Linux, and Mac.
+.NET 8 console subtitle converter for Windows, Linux, and Mac.
 
-Code is based on SE 3.6.9.
+Code is based on SE 3.6.9, but should be updated with new subtitle formats from SE.
 
 Imaged based formats/OCR was removed.
 
