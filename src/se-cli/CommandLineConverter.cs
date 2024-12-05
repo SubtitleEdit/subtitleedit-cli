@@ -130,6 +130,9 @@ namespace seconv
                 _stdOutWriter.WriteLine("      from left to right, and can be specified multiple times.");
                 _stdOutWriter.WriteLine("        /" + BatchAction.ApplyDurationLimits);
                 //_stdOutWriter.WriteLine("        /" + BatchAction.FixCommonErrors);
+                _stdOutWriter.WriteLine("        /deletefirst:<count>");
+                _stdOutWriter.WriteLine("        /deletelast:<count>");
+                _stdOutWriter.WriteLine("        /deletecontains:<word>");
                 _stdOutWriter.WriteLine("        /" + BatchAction.RemoveLineBreaks);
                 _stdOutWriter.WriteLine("        /" + BatchAction.MergeSameTimeCodes);
                 _stdOutWriter.WriteLine("        /" + BatchAction.MergeSameTexts);
@@ -1347,11 +1350,64 @@ namespace seconv
                                 p.Text = Utilities.RemoveUnicodeControlChars(p.Text);
                             }
                             break;
+                        default:
+                            RunBatchActionWithParameter(sub, action.ToString());
+                            break;
                     }
                 }
             }
 
             return sub;
+        }
+
+        private static void RunBatchActionWithParameter(Subtitle sub, string actionString)
+        {
+            var action = actionString.TrimStart('-', '/');
+
+            if (action.StartsWith("deleteFirst:", StringComparison.OrdinalIgnoreCase))
+            {
+                var deleteFirst = GetArgument(new List<string> { actionString }, "deletefirst:");
+                if (int.TryParse(deleteFirst, out var skipFirst) && skipFirst > 0)
+                {
+                    var paragraphs = sub.Paragraphs.Skip(skipFirst).ToList();
+                    sub.Paragraphs.Clear();
+                    sub.Paragraphs.AddRange(paragraphs);
+                    sub.Renumber();
+                }
+            }
+            else if (action.StartsWith("deleteLast:", StringComparison.OrdinalIgnoreCase))
+            {
+                var deleteLast = GetArgument(new List<string> { actionString }, "deletelast:");
+                if (int.TryParse(deleteLast, out var skipLast) && skipLast > 0)
+                {
+                    var paragraphs = sub.Paragraphs.Take(sub.Paragraphs.Count - skipLast).ToList();
+                    sub.Paragraphs.Clear();
+                    sub.Paragraphs.AddRange(paragraphs);
+                    sub.Renumber();
+                }
+            }
+            else if (action.StartsWith("deleteContains:", StringComparison.OrdinalIgnoreCase))
+            {
+                var deleteContains = GetArgument(new List<string> { actionString }, "deletecontains:");
+                if (!string.IsNullOrEmpty(deleteContains))
+                {
+
+                    for (var index = sub.Paragraphs.Count - 1; index >= 0; index--)
+                    {
+                        var paragraph = sub.Paragraphs[index];
+                        if (paragraph.Text.Contains(deleteContains, StringComparison.Ordinal))
+                        {
+                            sub.Paragraphs.RemoveAt(index);
+                        }
+                    }
+
+                    sub.Renumber();
+                }
+            }
+            else
+            {
+                _stdOutWriter.WriteLine("Unknown parameter: " + actionString);
+            }
         }
 
         internal static void DeleteContains(Subtitle sub, string deleteContains)
