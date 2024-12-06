@@ -127,7 +127,7 @@ namespace seconv
                 _stdOutWriter.WriteLine("        /targetfps:<frame rate>");
                 _stdOutWriter.WriteLine("        /teletextonly");
                 _stdOutWriter.WriteLine("        /track-number:<comma separated track number list>");
-                _stdOutWriter.WriteLine("        /ocrdb:<ocr db> (e.g. \"latin\")");
+                _stdOutWriter.WriteLine("        /ocrdb:<ocr db> (e.g. \"Latin\")");
                 _stdOutWriter.WriteLine("      The following operations are applied in command line order");
                 _stdOutWriter.WriteLine("      from left to right, and can be specified multiple times.");
                 _stdOutWriter.WriteLine("        /" + BatchAction.ApplyDurationLimits);
@@ -708,7 +708,7 @@ namespace seconv
 
             if (string.IsNullOrEmpty(ocrDb))
             {
-                ocrDb = "latin";
+                ocrDb = "Latin";
             }
 
             if (!ocrDb.EndsWith(".nocr", StringComparison.InvariantCultureIgnoreCase))
@@ -717,7 +717,6 @@ namespace seconv
             }
 
             var folder = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()!.Location);
-
             var nOcrFileName = Path.Combine(folder, ocrDb);
             if (!File.Exists(nOcrFileName))
             {
