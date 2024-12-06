@@ -52,114 +52,70 @@ public class NOcrChar
         return Text;
     }
 
-    public bool IsSensitive => Text == "O" || Text == "o" || Text == "0" || Text == "'" || Text == "-" || Text == ":" || Text == "\"";
+    public bool IsSensitive => Text is "O" or "o" or "0" or "'" or "-" or ":" or "\"";
 
-    public NOcrChar(Stream stream, bool isVersion2)
+    public NOcrChar(ref int position, byte[] file)
     {
+        Text = string.Empty;
+        LinesForeground = new List<NOcrLine>();
+        LinesBackground = new List<NOcrLine>();
+
         try
         {
-            if (isVersion2)
+            var buffer = new byte[4];
+            if (position + buffer.Length >= file.Length)
             {
-                var buffer = new byte[4];
-                var read = stream.Read(buffer, 0, buffer.Length);
-                if (read < buffer.Length)
-                {
-                    LoadedOk = false;
-                    return;
-                }
+                LoadedOk = false;
+                return;
+            }
+            
+            var isShort = (file[position] & 0b0001_0000) > 0;
+            Italic = (file[position] & 0b0010_0000) > 0;
 
-                var isShort = (buffer[0] & 0b0001_0000) > 0;
-                Italic = (buffer[0] & 0b0010_0000) > 0;
-
-                if (isShort)
-                {
-                    ExpandCount = buffer[0] & 0b0000_1111;
-                    Width = buffer[1];
-                    Height = buffer[2];
-                    MarginTop = buffer[3];
-                }
-                else
-                {
-                    ExpandCount = stream.ReadByte();
-                    Width = stream.ReadByte() << 8 | stream.ReadByte();
-                    Height = stream.ReadByte() << 8 | stream.ReadByte();
-                    MarginTop = stream.ReadByte() << 8 | stream.ReadByte();
-                }
-
-                var textLen = stream.ReadByte();
-                if (textLen > 0)
-                {
-                    buffer = new byte[textLen];
-                    stream.Read(buffer, 0, buffer.Length);
-                    Text = System.Text.Encoding.UTF8.GetString(buffer);
-                }
-                else
-                {
-                    Text = string.Empty;
-                }
-
-                if (isShort)
-                {
-                    LinesForeground = ReadPointsBytes(stream);
-                    LinesBackground = ReadPointsBytes(stream);
-                }
-                else
-                {
-                    LinesForeground = ReadPoints(stream);
-                    LinesBackground = ReadPoints(stream);
-                }
-
-                if (Width > 0 && Height > 0 && Width <= 1920 && Height <= 1080 && Text.IndexOf('\0') < 0)
-                {
-                    LoadedOk = true;
-                }
-                else
-                {
-                    LoadedOk = false;
-                }
+            if (isShort)
+            {
+                ExpandCount = file[position++] & 0b0000_1111;
+                Width = file[position++];
+                Height = file[position++];
+                MarginTop = file[position++];
             }
             else
             {
-                var buffer = new byte[9];
-                var read = stream.Read(buffer, 0, buffer.Length);
-                if (read < buffer.Length)
-                {
-                    LoadedOk = false;
-                    return;
-                }
+                ExpandCount = file[position++];
+                Width = file[position++] << 8 | file[position++];
+                Height = file[position++] << 8 | file[position++];
+                MarginTop = file[position++] << 8 | file[position++];
+            }
 
-                Width = buffer[0] << 8 | buffer[1];
-                Height = buffer[2] << 8 | buffer[3];
+            var textLen = file[position++];
+            if (textLen > 0)
+            {
+                Text = System.Text.Encoding.UTF8.GetString(file, position, textLen);
+                position += textLen;
+            }
+            else
+            {
+                Text = string.Empty;
+            }
 
-                MarginTop = buffer[4] << 8 | buffer[5];
+            if (isShort)
+            {
+                LinesForeground = ReadPointsBytes(ref position, file);
+                LinesBackground = ReadPointsBytes(ref position, file);
+            }
+            else
+            {
+                LinesForeground = ReadPoints(ref position, file);
+                LinesBackground = ReadPoints(ref position, file);
+            }
 
-                Italic = buffer[6] != 0;
-
-                ExpandCount = buffer[7];
-
-                int textLen = buffer[8];
-                if (textLen > 0)
-                {
-                    buffer = new byte[textLen];
-                    stream.Read(buffer, 0, buffer.Length);
-                    Text = System.Text.Encoding.UTF8.GetString(buffer);
-                }
-                else
-                {
-                    Text = string.Empty;
-                }
-
-                LinesForeground = ReadPoints(stream);
-                LinesBackground = ReadPoints(stream);
-
-                if (Width > 0 && Height > 0 && Width <= 1920 && Height <= 1080 && Text.IndexOf('\0') < 0)
-                {
-                    LoadedOk = true;
-                }
-                else
-                {
-                    LoadedOk = false;
-                }
+            if (Width > 0 && Height > 0 && Width <= 1920 && Height <= 1080 && Text.IndexOf('\0') < 0)
+            {
+                LoadedOk = true;
+            }
+            else
+            {
+                LoadedOk = false;
             }
         }
         catch
@@ -168,36 +124,33 @@ public class NOcrChar
         }
     }
 
-    private static List<NOcrLine> ReadPoints(Stream stream)
+    private static List<NOcrLine> ReadPoints(ref int position, byte[] file)
     {
-        var length = stream.ReadByte() << 8 | stream.ReadByte();
+        var length = file[position++] << 8 | file[position++];
         var list = new List<NOcrLine>(length);
-        var buffer = new byte[8];
         for (var i = 0; i < length; i++)
         {
-            stream.Read(buffer, 0, buffer.Length);
             var point = new NOcrLine
             {
-                Start = new OcrPoint(buffer[0] << 8 | buffer[1], buffer[2] << 8 | buffer[3]),
-                End = new OcrPoint(buffer[4] << 8 | buffer[5], buffer[6] << 8 | buffer[7])
+                Start = new OcrPoint(file[position++] << 8 | file[position++], file[position++] << 8 | file[position++]),
+                End = new OcrPoint(file[position++] << 8 | file[position++], file[position++] << 8 | file[position++])
             };
             list.Add(point);
         }
+
         return list;
     }
 
-    private static List<NOcrLine> ReadPointsBytes(Stream stream)
+    private static List<NOcrLine> ReadPointsBytes(ref int position, byte[] file)
     {
-        var length = stream.ReadByte();
+        var length = file[position++];
         var list = new List<NOcrLine>(length);
-        var buffer = new byte[4];
         for (var i = 0; i < length; i++)
         {
-            stream.Read(buffer, 0, buffer.Length);
             var point = new NOcrLine
             {
-                Start = new OcrPoint(buffer[0], buffer[1]),
-                End = new OcrPoint(buffer[2], buffer[3])
+                Start = new OcrPoint(file[position++], file[position++]),
+                End = new OcrPoint(file[position++], file[position++])
             };
             list.Add(point);
         }
