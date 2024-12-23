@@ -966,7 +966,7 @@ namespace seconv
                     if (argument.Equals("/" + actionName, StringComparison.OrdinalIgnoreCase) ||
                         argument.Equals("-" + actionName, StringComparison.OrdinalIgnoreCase))
                     {
-                        actions.Add((BatchAction)Enum.Parse(typeof(BatchAction), actionName));
+                        actions.Add((BatchAction)Enum.Parse(typeof(BatchAction), actionName, true));
                         commandLineArguments.RemoveAt(i);
                     }
                 }
