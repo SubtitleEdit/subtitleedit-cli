@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM bitnami/dotnet-sdk:6
+FROM bitnami/dotnet-sdk:8
 
 #Get the se cli code from github
 WORKDIR /workdir/subtitleedit-cli/src

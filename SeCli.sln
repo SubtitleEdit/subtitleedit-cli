@@ -7,6 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "seconv", "src\se-cli\seconv
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{C34E175A-40EC-41DC-BEE6-2F934BF6C8FF}"
 	ProjectSection(SolutionItems) = preProject
+		docker\Dockerfile = docker\Dockerfile
 		README.md = README.md
 	EndProjectSection
 EndProject
