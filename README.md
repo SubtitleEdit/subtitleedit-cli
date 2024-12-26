@@ -21,7 +21,7 @@ This was made due to https://github.com/SubtitleEdit/subtitleedit/issues/3568
 
 ### Prerequisites
 
-#### Install Docker
+#### Install Docker + dotnet 8 SDK
 
 #### Clone repository
 ```
