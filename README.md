@@ -17,23 +17,35 @@ E.g.: `./seconv *.sub subrip` - for more info see https://www.nikse.dk/subtitlee
 This was made due to https://github.com/SubtitleEdit/subtitleedit/issues/3568
 
 
-## Build and run with docker
+## Build and run with Docker
+
+### Prerequisites
+
+#### Install Docker
+
+#### Clone repository
+```
+git clone https://github.com/SubtitleEdit/subtitleedit-cli.git
+cd subtitleedit-cli
+```
 
 ### Build
 
-Be in the root directory of the repository, then run:    
+Reside in the root directory of the repository, then run:    
 ```
 docker build -t seconv:1.0 -f docker/Dockerfile .
 ```
 
-This is a multi stage build, it first builds the application, then creates the docker container for execution. 
+This is a multi stage build. It first builds the application, then creates the docker image. 
 
 ### Run
 
-Example:
-
-Navigate to the 'docker' folder, then execute:   
+Run conversion by executing e.g.:   
 ```
 docker run --rm -it -v $(pwd)/subtitles:/subtitles seconv:1.0 sample.srt pac
 ```
 
+Parameters:
+- -v: Mount local subtitles directory.
+- sample.srt: input file or pattern. E.g. *.srt.
+- pac: output-format. E.g. pac, stl, srt, ass.
