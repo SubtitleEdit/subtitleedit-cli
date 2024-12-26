@@ -717,8 +717,6 @@ namespace seconv
             }
             
             var folder = AppDomain.CurrentDomain.BaseDirectory ?? string.Empty;
-            Console.WriteLine("BaseDirectory: " + folder);
-            Console.WriteLine("CurrentDirectory: " + Directory.GetCurrentDirectory());
             var nOcrFileName = Path.Combine(folder, ocrDb);
             var nOcrFileName2 = Path.Combine(folder, "..", ocrDb);
             if (!File.Exists(nOcrFileName))
