@@ -34,6 +34,6 @@ Example:
 
 Navigate to the 'docker' folder, then execute:   
 ```
-docker run --rm -it -v $(pwd)/subtitles:/subtitles seconv:1.0  sample.srt pac
+docker run --rm -it -v $(pwd)/subtitles:/subtitles seconv:1.0 sample.srt pac
 ```
 

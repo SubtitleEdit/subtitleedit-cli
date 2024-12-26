@@ -18,20 +18,6 @@ LABEL maintainer="Wauter De Bruyne"
 
 RUN apt-get update && apt-get install -y \
     libicu-dev \
-    fontconfig \
-    libfontconfig1 \
-    libfreetype6 \
-    libgl1 \
-    libglib2.0-0 \
-    libc6-dev \
-    libpng16-16 \
-    libjpeg8 \
-    libgif7 \
-    libwebp7 \
-    libwebpmux3 \
-    libwebpdemux2 \
-    liblzma5 \
-    libharfbuzz0b \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build /workdir/subtitleedit-cli/src/se-cli/bin/Release/net8.0/linux-x64/publish /secli
