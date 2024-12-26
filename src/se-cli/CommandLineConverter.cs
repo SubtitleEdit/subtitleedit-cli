@@ -715,14 +715,24 @@ namespace seconv
             {
                 ocrDb += ".nocr";
             }
-
-            var folder = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()!.Location);
+            
+            var folder = AppDomain.CurrentDomain.BaseDirectory ?? string.Empty;
+            Console.WriteLine("BaseDirectory: " + folder);
+            Console.WriteLine("CurrentDirectory: " + Directory.GetCurrentDirectory());
             var nOcrFileName = Path.Combine(folder, ocrDb);
+            var nOcrFileName2 = Path.Combine(folder, "..", ocrDb);
             if (!File.Exists(nOcrFileName))
             {
-                errors++;
-                _stdOutWriter?.WriteLine($"ERROR: OCR database file \"{nOcrFileName}\" not found.");
-                return;
+                if (File.Exists(nOcrFileName2))
+                {
+                    nOcrFileName = nOcrFileName2;
+                }
+                else
+                {
+                    errors++;
+                    _stdOutWriter?.WriteLine($"ERROR: OCR database file \"{nOcrFileName}\" not found.");
+                    return;
+                }
             }
 
             var nOcrDb = new NOcrDb(nOcrFileName);

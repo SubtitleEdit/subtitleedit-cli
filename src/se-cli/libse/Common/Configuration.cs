@@ -93,24 +93,6 @@ namespace seconv.libse.Common
 
         public static IEnumerable<Encoding> AvailableEncodings => Instance.Value._encodings;
 
-        private static string GetInstallerPath()
-        {
-            const string valueName = "InstallLocation";
-            var value = RegistryUtil.GetValue(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\SubtitleEdit_is1", valueName);
-            if (value != null && Directory.Exists(value))
-            {
-                return value;
-            }
-
-            value = RegistryUtil.GetValue(@"SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\SubtitleEdit_is1", valueName);
-            if (value != null && Directory.Exists(value))
-            {
-                return value;
-            }
-
-            return null;
-        }
-
         private static string GetBaseDirectory()
         {
             var assembly = System.Reflection.Assembly.GetEntryAssembly() ?? System.Reflection.Assembly.GetExecutingAssembly();
@@ -150,16 +132,6 @@ namespace seconv.libse.Common
                 }
                 Directory.CreateDirectory(Path.Combine(appDataRoamingPath, "Dictionaries"));
                 return appDataRoamingPath + Path.DirectorySeparatorChar; // system installation
-            }
-
-            var installerPath = GetInstallerPath();
-            var hasUninstallFiles = Directory.GetFiles(BaseDirectory, "unins*.*").Length > 0;
-            var hasDictionaryFolder = Directory.Exists(Path.Combine(BaseDirectory, "Dictionaries"));
-
-            if ((installerPath == null || !installerPath.TrimEnd(Path.DirectorySeparatorChar).Equals(BaseDirectory.TrimEnd(Path.DirectorySeparatorChar), StringComparison.OrdinalIgnoreCase))
-                && !hasUninstallFiles && (hasDictionaryFolder || !Directory.Exists(Path.Combine(appDataRoamingPath, "Dictionaries"))))
-            {
-                return BaseDirectory;
             }
 
             if (Directory.Exists(appDataRoamingPath))
