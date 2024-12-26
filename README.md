@@ -4,9 +4,7 @@
 
 Code is based on SE 3.6.9, but should be updated with new subtitle formats from SE.
 
-Imaged based formats/OCR was removed.
-
-To update, the `SubtitleFormats` should be copied from latest SE.
+Imaged based formats/OCR was removed (only Blu-ray sup OCR is supported).
 
 How to compile: `dotnet build seconv.csproj`
 
@@ -15,6 +13,11 @@ How to run: `./seconv <pattern> <name-of-format-without-spaces> [<optional-param
 E.g.: `./seconv *.sub subrip` - for more info see https://www.nikse.dk/subtitleedit/help#commandline
 
 This was made due to https://github.com/SubtitleEdit/subtitleedit/issues/3568
+
+
+
+---
+
 
 
 ## Build and run with Docker
