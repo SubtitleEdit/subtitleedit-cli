@@ -1350,9 +1350,19 @@ namespace seconv
                         case BatchAction.RemoveTextForHI:
                             var hiSettings = new RemoveTextForHISettings(sub);
                             var hiLib = new RemoveTextForHI(hiSettings);
-                            foreach (var p in sub.Paragraphs)
+
+                            var index = sub.Paragraphs.Count - 1;
+                            while (index >= 0)
                             {
-                                p.Text = hiLib.RemoveTextFromHearImpaired(p.Text, sub, sub.Paragraphs.IndexOf(p));
+                                var p = sub.Paragraphs[index];
+                                p.Text = hiLib.RemoveTextFromHearImpaired(p.Text, sub, index);
+
+                                if (string.IsNullOrWhiteSpace(p.Text))
+                                {
+                                    sub.Paragraphs.RemoveAt(index);
+                                }
+
+                                index--;
                             }
 
                             break;
