@@ -1365,6 +1365,8 @@ namespace seconv
                                 index--;
                             }
 
+                            sub.Renumber();
+
                             break;
                         case BatchAction.RemoveFormatting:
                             foreach (var p in sub.Paragraphs)
