@@ -11,7 +11,6 @@ using System.Text.RegularExpressions;
 
 namespace seconv
 {
-
     public static class CommandLineConverter
     {
         private static StreamWriter _stdOutWriter;
@@ -59,7 +58,7 @@ namespace seconv
                 var firstArgument = commandLineArguments[1].Trim().ToLowerInvariant();
                 var action = Convert;
 
-                if (firstArgument is "/help" or "-help" or "/?" or "-?")
+                if (firstArgument is "/help" or "--help" or "-help" or "-h" or "--h" or "/?" or "-?")
                 {
                     action = Help;
                 }
@@ -455,6 +454,7 @@ namespace seconv
 
                 if (unconsumedArguments.Count > 0)
                 {
+                    errors++;
                     foreach (var argument in unconsumedArguments)
                     {
                         if (argument.StartsWith('/') || argument.StartsWith('-'))
@@ -540,13 +540,15 @@ namespace seconv
                                     }
                                     else
                                     {
-                                        _stdOutWriter.WriteLine($"No subtitle tracks in Matroska file '{fileName}'.");
+                                        errors++;
+                                        _stdOutWriter.WriteLine($"ERROR: No subtitle tracks in Matroska file '{fileName}'.");
                                         done = true;
                                     }
                                 }
                                 else
                                 {
-                                    _stdOutWriter.WriteLine($"Invalid Matroska file '{fileName}'!");
+                                    errors++;
+                                    _stdOutWriter.WriteLine($"ERROR: Invalid Matroska file '{fileName}'!");
                                     done = true;
                                 }
                             }
@@ -651,13 +653,14 @@ namespace seconv
 
                         if (!done && format == null)
                         {
+                            errors++;
                             if (IsFileLengthOkForTextSubtitle(fileName, fileInfo))
                             {
-                                _stdOutWriter.WriteLine($"{fileName}: {targetFormat} - input file format unknown!");
+                                _stdOutWriter.WriteLine($"ERROR: {fileName}: {targetFormat} - input file format unknown!");
                             }
                             else
                             {
-                                _stdOutWriter.WriteLine($"{fileName}: {targetFormat} - input file too large!");
+                                _stdOutWriter.WriteLine($"ERROR: {fileName}: {targetFormat} - input file too large!");
                             }
                         }
                         else if (!done)
@@ -667,7 +670,7 @@ namespace seconv
                     }
                     else
                     {
-                        _stdOutWriter.WriteLine($"{count}: {fileName} - file not found!");
+                        _stdOutWriter.WriteLine($"ERROR: {count}: {fileName} - file not found!");
                         errors++;
                     }
                 }
@@ -681,7 +684,7 @@ namespace seconv
                 }
                 else
                 {
-                    _stdOutWriter.WriteLine("Try 'SubtitleEdit /?' or 'SubtitleEdit -?' for more information.");
+                    _stdOutWriter.WriteLine("ERROR: Try 'seconv /?' or 'seconv -?' for more information.");
                 }
                 _stdOutWriter.WriteLine();
                 errors++;
@@ -715,7 +718,7 @@ namespace seconv
             {
                 ocrDb += ".nocr";
             }
-            
+
             var folder = AppDomain.CurrentDomain.BaseDirectory ?? string.Empty;
             var nOcrFileName = Path.Combine(folder, ocrDb);
             var nOcrFileName2 = Path.Combine(folder, "..", ocrDb);
