@@ -148,9 +148,9 @@ namespace seconv
                 _stdOutWriter.WriteLine("        /" + BatchAction.ConvertColorsToDialog);
                 _stdOutWriter.WriteLine("        /" + BatchAction.SplitLongLines);
                 _stdOutWriter.WriteLine();
-                _stdOutWriter.WriteLine("    Example: SubtitleEdit /convert *.srt sami");
-                _stdOutWriter.WriteLine("    Show this usage message: SubtitleEdit /help");
-                _stdOutWriter.WriteLine("    List available formats: SubtitleEdit /formats");
+                _stdOutWriter.WriteLine("    Example: seconv *.srt sami");
+                _stdOutWriter.WriteLine("    Show this usage message: seconv /help");
+                _stdOutWriter.WriteLine("    List available formats: seconv /formats");
             }
             _stdOutWriter.WriteLine();
 
