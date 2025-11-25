@@ -115,7 +115,6 @@ namespace seconv
                 _stdOutWriter.WriteLine("        /inputfolder:<folder name>");
                 _stdOutWriter.WriteLine("        /multiplereplace (equivalent to /multiplereplace:.)");
                 _stdOutWriter.WriteLine("        /multiplereplace:<comma separated file name list> ('.' represents the default replace rules)");
-                _stdOutWriter.WriteLine("        /ocrengine:<ocr engine> (\"tesseract\"/\"nOCR\")");
                 _stdOutWriter.WriteLine("        /offset:hh:mm:ss:ms");
                 _stdOutWriter.WriteLine("        /outputfilename:<file name> (for single file only)");
                 _stdOutWriter.WriteLine("        /outputfolder:<folder name>");
